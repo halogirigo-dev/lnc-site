@@ -29,3 +29,8 @@ define('UPLOADS_URL', BASE_URL . '/uploads');
 // Currency
 define('CURRENCY',    'IDR');
 define('USD_RATE',    16000); // 1 USD ≈ IDR 16,000
+
+// Bank transfer details (update with real account before go-live)
+define('BANK_NAME',    'Bank Central Asia (BCA)');
+define('BANK_ACCOUNT', '1234567890');
+define('BANK_HOLDER',  SITE_COMPANY);

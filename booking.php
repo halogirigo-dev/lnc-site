@@ -218,17 +218,6 @@ $error = isset($_GET['error'], $error_msgs[$_GET['error']]) ? $error_msgs[$_GET[
 
     </form>
 
-    <!-- Confirmation (hidden until submit) -->
-    <div id="booking-confirm" style="display:none;text-align:center;padding:60px 0;">
-      <div style="width:72px;height:72px;border-radius:50%;background:#f0faf7;border:2px solid #2cb896;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 28px;">✓</div>
-      <h2 style="font-family:'Raleway',sans-serif;font-weight:900;font-size:36px;color:#1a2118;margin-bottom:12px;">Request Sent!</h2>
-      <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:#8a7d6e;margin-bottom:24px;">Your journey proposal is in our hands.</p>
-      <p style="font-family:'Lato',sans-serif;font-size:15px;color:#8a7d6e;max-width:480px;margin:0 auto 40px;line-height:1.8;">Our team will reach out within 24–48 hours with a bespoke itinerary. Check your inbox and WhatsApp.</p>
-      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <a href="index.php" class="btn btn--primary">Back to Homepage</a>
-        <a href="experiences.php" class="btn btn--outline">Browse More Packages</a>
-      </div>
-    </div>
   </div>
 
   <!-- Sidebar -->

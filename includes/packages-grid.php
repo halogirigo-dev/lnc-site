@@ -31,15 +31,15 @@
         </div>
       </div>
       <div style="padding:40px 36px;display:flex;flex-direction:column;justify-content:center;gap:14px;">
-        <p style="font-family:'Raleway',sans-serif;font-weight:700;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#8a7d6e;"><?= $feat['id'] ?> · <?= htmlspecialchars($feat['duration']) ?></p>
-        <h3 style="font-family:'Raleway',sans-serif;font-weight:900;font-size:30px;line-height:1.1;color:#1a2118;"><?= htmlspecialchars($feat['title']) ?></h3>
-        <p style="font-family:'Lato',sans-serif;font-size:14px;color:#8a7d6e;line-height:1.7;"><?= htmlspecialchars($feat['subtitle']) ?></p>
+        <p style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#8a7d6e;"><?= $feat['id'] ?> · <?= htmlspecialchars($feat['duration']) ?></p>
+        <h3 style="font-family:'MuseoModerno',sans-serif;font-weight:900;font-size:30px;line-height:1.1;color:#1a2118;"><?= htmlspecialchars($feat['title']) ?></h3>
+        <p style="font-family:'MuseoModerno',sans-serif;font-size:14px;color:#8a7d6e;line-height:1.7;"><?= htmlspecialchars($feat['subtitle']) ?></p>
         <div style="width:40px;height:2px;background:#2cb896;"></div>
         <div style="display:flex;gap:24px;">
           <div>
-            <p style="font-family:'Raleway',sans-serif;font-weight:700;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#8a7d6e;">Starting from</p>
-            <p style="font-family:'Raleway',sans-serif;font-weight:900;font-size:18px;color:#2cb896;margin-top:2px;"><?= fmt_idr($feat['price']) ?></p>
-            <p style="font-family:'Raleway',sans-serif;font-size:10px;color:#8a7d6e;">/ pax (min <?= $feat['min_pax'] ?> pax) · excl. hotel</p>
+            <p style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#8a7d6e;">Starting from</p>
+            <p style="font-family:'MuseoModerno',sans-serif;font-weight:900;font-size:18px;color:#2cb896;margin-top:2px;"><?= fmt_idr($feat['price']) ?></p>
+            <p style="font-family:'MuseoModerno',sans-serif;font-size:10px;color:#8a7d6e;">/ pax (min <?= $feat['min_pax'] ?> pax) · excl. hotel</p>
           </div>
         </div>
         <a href="experiences.php?id=<?= $feat['id'] ?>" class="btn btn--primary" style="width:fit-content;">View Experience →</a>
@@ -74,7 +74,7 @@
               <small class="pkg-card__price" style="font-size:11px;color:#8a7d6e;font-weight:500;"><?= fmt_usd($pkg['price']) ?> · excl. hotel</small>
               <?php endif; ?>
             </div>
-            <span style="font-family:'Raleway',sans-serif;font-weight:600;font-size:11px;color:#8a7d6e;text-transform:uppercase;letter-spacing:.1em;"><?= htmlspecialchars($pkg['duration']) ?></span>
+            <span style="font-family:'MuseoModerno',sans-serif;font-weight:600;font-size:11px;color:#8a7d6e;text-transform:uppercase;letter-spacing:.1em;"><?= htmlspecialchars($pkg['duration']) ?></span>
           </div>
           <a href="experiences.php?id=<?= $pkg['id'] ?>" class="btn btn--dark btn--full btn--sm" style="margin-top:12px;">View →</a>
         </div>

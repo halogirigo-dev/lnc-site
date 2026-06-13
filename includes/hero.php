@@ -15,12 +15,12 @@
       Private expeditions, cultural encounters, and honeymoon escapes — each crafted exclusively for you.
     </p>
     <div class="hero__ctas">
-      <a href="experiences.php" class="btn btn--primary">Explore Experiences</a>
-      <a href="https://wa.me/6281200000000?text=Hi%20LNC%2C%20I%27d%20like%20to%20chat%20about%20a%20Lombok%20journey" 
-         class="btn-ghost" target="_blank" rel="noopener">
+      <a href="booking.php" class="btn btn--primary">Plan My Journey →</a>
+      <a href="https://wa.me/<?= SITE_WA ?>?text=Hi%20LNC%2C%20I%27d%20like%20to%20chat%20about%20a%20Lombok%20journey"
+         class="btn-ghost" target="_blank" rel="noopener noreferrer">
         💬 Chat on WhatsApp
       </a>
-      <a href="booking.php" class="btn btn--outline-light">Plan My Journey →</a>
+      <a href="experiences.php" class="btn btn--outline-light">Explore Experiences</a>
     </div>
   </div>
   <div class="hero__scroll">

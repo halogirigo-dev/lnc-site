@@ -619,8 +619,11 @@ body { animation: lnc-fade-in 0.4s ease both; }
 }
 
 @media print {
-  .nav, .wa-float, .no-print { display: none !important; }
+  .nav, .wa-float, .whatsapp-float, .mobile-sticky-cta,
+  .no-print, .booking-foot, .prefooter-cta { display: none !important; }
   .doc-wrap { box-shadow: none; padding: 40px; }
+  body { background: #fff; }
+  .footer { display: none !important; }
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1487,94 +1490,29 @@ html { scroll-behavior: smooth; }
   --c-muted:     #6B6860;
 }
 
-/* --- Apply premium typography globally --- */
-h1, h2, h3 {
-  font-family: var(--font-serif);
-  font-weight: 400;
-  line-height: 1.15;
-}
-h1 { font-size: var(--text-hero); letter-spacing: -0.01em; }
-h2 { font-size: var(--text-display); }
-h3 { font-size: var(--text-card); }
+/* --- Typography: intentionally NOT overriding MuseoModerno design system --- */
+/* h1/h2/h3 and body stay on MuseoModerno (defined in @font-face above)     */
 
-body {
-  font-family: var(--font-sans);
-  font-size: var(--text-body);
-  line-height: 1.75;
-}
+/* --- Section spacing: NOT overriding design system --section-pad token --- */
 
-/* Eyebrow label style */
-.eyebrow, .section-eyebrow, .eyebrow-label {
-  font-family: var(--font-sans);
-  font-size: var(--text-label);
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--c-cta);
-  display: block;
-  margin-bottom: 10px;
-}
-
-/* --- Section spacing upgrade --- */
-.section,
-section.section--sand,
-section.section--dark,
-section.section--light {
-  padding: var(--space-12) clamp(24px, 6vw, 80px);
-}
-@media (max-width: 768px) {
-  .section,
-  section.section--sand,
-  section.section--dark,
-  section.section--light {
-    padding: var(--space-8) var(--space-3);
-  }
-}
-
-/* --- CTA Button System --- */
-.btn-primary,
-.btn--primary {
+/* --- btn-primary alias for non-BEM usage (pre-footer CTA) --- */
+/* Uses design-system values, NOT pill shape */
+.btn-primary {
   display: inline-block;
-  background: var(--c-cta);
-  color: #fff !important;
+  background: var(--teal);
+  color: var(--white) !important;
   padding: 14px 32px;
-  border-radius: 999px;
-  font-family: var(--font-sans);
+  font-family: var(--font-head);
   font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   text-decoration: none;
   border: none;
   cursor: pointer;
-  transition: background 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+  transition: opacity 0.2s, transform 0.2s;
 }
-.btn-primary:hover, .btn--primary:hover {
-  background: var(--c-cta-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(196,113,74,0.35);
-}
-
-.btn-secondary {
-  display: inline-block;
-  background: transparent;
-  color: var(--c-forest) !important;
-  padding: 13px 31px;
-  border-radius: 999px;
-  border: 2px solid var(--c-forest);
-  font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background 200ms ease, color 200ms ease;
-}
-.btn-secondary:hover {
-  background: var(--c-forest);
-  color: #fff !important;
-}
+.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
 
 .btn-ghost {
   display: inline-block;
@@ -1626,10 +1564,10 @@ section.section--light {
 }
 .tour-card__title,
 .package-card__title {
-  font-family: var(--font-serif);
+  font-family: var(--font-head);
   font-size: 22px;
-  font-weight: 400;
-  color: var(--c-forest);
+  font-weight: 800;
+  color: var(--dark);
   line-height: 1.25;
   margin-bottom: 8px;
 }
@@ -1794,12 +1732,12 @@ section.section--light {
 .reveal--delay-2 { transition-delay: 200ms; }
 .reveal--delay-3 { transition-delay: 300ms; }
 
-/* --- Nav scrolled state (enhanced) --- */
-.nav.scrolled,
-nav.scrolled,
-.site-header.scrolled {
-  background: var(--c-forest) !important;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.18);
+/* --- Nav scrolled state: restore design-system sand background --- */
+.nav.scrolled {
+  background: rgba(247,244,238,.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 rgba(0,0,0,.08);
 }
 
 /* --- Footer enhancements --- */
@@ -1934,14 +1872,17 @@ nav.scrolled,
   50%       { transform: translateX(-50%) translateY(5px); }
 }
 
-/* --- Cormorant applied to hero title specifically --- */
+/* --- Hero title: restore MuseoModerno Black --- */
 .hero__title {
-  font-family: var(--font-serif) !important;
-  font-weight: 300 !important;
-  font-size: var(--text-hero) !important;
-  line-height: 1.1 !important;
-  letter-spacing: -0.01em;
+  font-family: var(--font-head);
+  font-weight: 900;
+  font-size: 76px;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
 }
+@media (max-width: 1024px) { .hero__title { font-size: 58px; } }
+@media (max-width: 768px)  { .hero__title { font-size: 38px; line-height: 1.08; } }
+@media (max-width: 480px)  { .hero__title { font-size: 32px; } }
 
 /* --- Hero CTA group spacing --- */
 .hero__cta-group,
@@ -2173,4 +2114,47 @@ nav.scrolled,
   .pkg-option { grid-template-columns: 40px 1fr; }
   .pkg-option__pricing { display: none; }
   .bk-review-val { max-width: 55%; }
+}
+
+/* ── BOOKING STEP VALIDATION ── */
+.bk-field-error {
+  border-color: #e53935 !important;
+  box-shadow: 0 0 0 2px rgba(229,57,53,.15) !important;
+}
+.bk-error-msg {
+  display: block; font-family: var(--font-head); font-size: 11px;
+  color: #e53935; margin-top: 4px; letter-spacing: .04em;
+}
+.pkg-option--error {
+  border-color: #e53935 !important;
+  animation: shake .35s ease;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-6px); }
+  75%       { transform: translateX(6px); }
+}
+
+/* ── SUBMIT LOADING SPINNER ── */
+.btn--loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+.btn--loading::after {
+  content: '';
+  position: absolute; top: 50%; left: 50%;
+  width: 16px; height: 16px; margin: -8px 0 0 -8px;
+  border: 2px solid rgba(255,255,255,.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── HERO CTA — PRIMARY FIRST ── */
+.hero__ctas { flex-direction: row; }
+.hero__ctas .btn--primary { order: -1; }
+@media (max-width: 768px) {
+  .hero__ctas { flex-direction: column; align-items: center; }
 }

@@ -4,7 +4,7 @@
   <h2>Still planning your Lombok journey?</h2>
   <p>Let's talk. We respond within 24 hours — or chat with us now on WhatsApp.</p>
   <div class="prefooter-cta__actions">
-    <a href="booking.php" class="btn-primary">Plan Your Journey</a>
+    <a href="booking.php" class="btn btn--primary">Plan Your Journey</a>
     <a href="https://wa.me/6281200000000?text=Hi%20LNC%2C%20I%27d%20like%20to%20enquire%20about%20a%20trip%20to%20Lombok" 
        class="btn-ghost" target="_blank" rel="noopener">
       💬 WhatsApp Us

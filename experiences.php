@@ -95,21 +95,21 @@ if ($active_id) {
                 <?php if (!empty($pkg['price_label'])): ?>
                 <p class="pkg-card__price" style="font-size:12px;"><?= $pkg['price_label'] ?></p>
                 <?php elseif ($pkg['price']): ?>
-                <small style="font-family:'Raleway',sans-serif;font-size:10px;color:#8a7d6e;display:block;">per pax · min <?= $pkg['min_pax'] ?> · excl. hotel</small>
+                <small style="font-family:'MuseoModerno',sans-serif;font-size:10px;color:#8a7d6e;display:block;">per pax · min <?= $pkg['min_pax'] ?> · excl. hotel</small>
                 <?php endif; ?>
               </div>
             </div>
             <!-- Itinerary accordion -->
             <details style="margin-top:12px;border-top:1px solid #e0d8ce;padding-top:12px;">
-              <summary style="font-family:'Raleway',sans-serif;font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#3d3228;cursor:pointer;list-style:none;">
+              <summary style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#3d3228;cursor:pointer;list-style:none;">
                 View Itinerary ↓
               </summary>
               <div style="margin-top:12px;">
                 <?php foreach ($pkg['itinerary'] as $day): ?>
                 <div style="margin-bottom:12px;">
-                  <p style="font-family:'Raleway',sans-serif;font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#2cb896;margin-bottom:4px;"><?= htmlspecialchars($day['day']) ?> — <?= htmlspecialchars($day['title']) ?></p>
+                  <p style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#2cb896;margin-bottom:4px;"><?= htmlspecialchars($day['day']) ?> — <?= htmlspecialchars($day['title']) ?></p>
                   <?php foreach ($day['items'] as $item): ?>
-                  <p style="font-family:'Lato',sans-serif;font-size:12px;color:#8a7d6e;line-height:1.6;padding-left:10px;border-left:2px solid #e0d8ce;margin-bottom:3px;"><?= htmlspecialchars($item) ?></p>
+                  <p style="font-family:'MuseoModerno',sans-serif;font-size:12px;color:#8a7d6e;line-height:1.6;padding-left:10px;border-left:2px solid #e0d8ce;margin-bottom:3px;"><?= htmlspecialchars($item) ?></p>
                   <?php endforeach; ?>
                 </div>
                 <?php endforeach; ?>

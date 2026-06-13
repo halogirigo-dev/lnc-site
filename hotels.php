@@ -22,16 +22,16 @@ include 'includes/nav.php';
 <div style="background:#f0faf7;border-bottom:3px solid #2cb896;padding:16px 48px;">
   <div class="container" style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
     <div style="flex:1;min-width:260px;">
-      <p style="font-family:'Raleway',sans-serif;font-weight:700;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#2cb896;margin-bottom:4px;">Low Season</p>
-      <p style="font-family:'Lato',sans-serif;font-size:13px;color:#3d3228;">January–March, May, October–early December</p>
+      <p style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#2cb896;margin-bottom:4px;">Low Season</p>
+      <p style="font-family:'MuseoModerno',sans-serif;font-size:13px;color:#3d3228;">January–March, May, October–early December</p>
     </div>
     <div style="flex:1;min-width:260px;">
-      <p style="font-family:'Raleway',sans-serif;font-weight:700;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#c4964a;margin-bottom:4px;">High Season</p>
-      <p style="font-family:'Lato',sans-serif;font-size:13px;color:#3d3228;">July–September, Eid (H-7 to H+7), Christmas & New Year (20 Dec–5 Jan)</p>
+      <p style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#c4964a;margin-bottom:4px;">High Season</p>
+      <p style="font-family:'MuseoModerno',sans-serif;font-size:13px;color:#3d3228;">July–September, Eid (H-7 to H+7), Christmas & New Year (20 Dec–5 Jan)</p>
     </div>
     <div style="flex:1;min-width:260px;">
-      <p style="font-family:'Raleway',sans-serif;font-weight:700;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#8a7d6e;margin-bottom:4px;">Driver Room</p>
-      <p style="font-family:'Lato',sans-serif;font-size:13px;color:#3d3228;">Most boutique hotels don't provide driver rooms. LNC budgets Rp 150k/night in transport costs.</p>
+      <p style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#8a7d6e;margin-bottom:4px;">Driver Room</p>
+      <p style="font-family:'MuseoModerno',sans-serif;font-size:13px;color:#3d3228;">Most boutique hotels don't provide driver rooms. LNC budgets Rp 150k/night in transport costs.</p>
     </div>
   </div>
 </div>
@@ -44,30 +44,30 @@ include 'includes/nav.php';
       <div>
         <span class="eyebrow" style="color:<?= htmlspecialchars($zone['color']) ?>;">Zone <?= $zi+1 ?></span>
         <h2 class="section-title"><?= htmlspecialchars($zone['zone']) ?></h2>
-        <p style="font-family:'Raleway',sans-serif;font-weight:600;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a7d6e;margin-top:4px;"><?= htmlspecialchars($zone['area']) ?></p>
+        <p style="font-family:'MuseoModerno',sans-serif;font-weight:600;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a7d6e;margin-top:4px;"><?= htmlspecialchars($zone['area']) ?></p>
       </div>
       <span class="tag" style="background:<?= htmlspecialchars($zone['color']) ?>;"><?= count($zone['properties']) ?> Properties</span>
     </div>
 
     <!-- Full table view -->
     <div style="overflow-x:auto;">
-      <table style="width:100%;border-collapse:collapse;font-family:'Lato',sans-serif;font-size:13px;">
+      <table style="width:100%;border-collapse:collapse;font-family:'MuseoModerno',sans-serif;font-size:13px;">
         <thead>
           <tr style="background:#1a2118;color:rgba(255,255,255,.5);">
-            <th style="font-family:'Raleway',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px;text-align:left;">Property</th>
-            <th style="font-family:'Raleway',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px;text-align:left;">Room Type</th>
-            <th style="font-family:'Raleway',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px;text-align:right;">Low Season</th>
-            <th style="font-family:'Raleway',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px;text-align:right;">High Season</th>
-            <th style="font-family:'Raleway',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px;text-align:left;">Breakfast</th>
-            <th style="font-family:'Raleway',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px;text-align:left;">Rating</th>
-            <th style="font-family:'Raleway',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px;text-align:left;">Contact</th>
+            <th style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px;text-align:left;">Property</th>
+            <th style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px;text-align:left;">Room Type</th>
+            <th style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px;text-align:right;">Low Season</th>
+            <th style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px;text-align:right;">High Season</th>
+            <th style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px;text-align:left;">Breakfast</th>
+            <th style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px;text-align:left;">Rating</th>
+            <th style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px;text-align:left;">Contact</th>
           </tr>
         </thead>
         <tbody>
           <?php foreach ($zone['properties'] as $hi => $h): ?>
           <tr style="background:<?= $hi%2===0?'#fff':'#faf7f3' ?>;border-bottom:1px solid #f0ebe3;">
             <td style="padding:16px;">
-              <p style="font-family:'Raleway',sans-serif;font-weight:800;font-size:14px;color:#1a2118;"><?= htmlspecialchars($h['name']) ?></p>
+              <p style="font-family:'MuseoModerno',sans-serif;font-weight:800;font-size:14px;color:#1a2118;"><?= htmlspecialchars($h['name']) ?></p>
               <p style="font-size:11px;color:#8a7d6e;margin-top:2px;"><?= htmlspecialchars($h['type']) ?></p>
               <p style="font-size:11px;color:#8a7d6e;font-style:italic;margin-top:4px;max-width:220px;line-height:1.5;"><?= htmlspecialchars($h['review']) ?></p>
             </td>
@@ -75,11 +75,11 @@ include 'includes/nav.php';
               <p style="font-weight:700;color:#1a2118;margin-bottom:2px;"><?= htmlspecialchars($h['room']) ?></p>
               <p style="font-size:11px;color:#8a7d6e;line-height:1.5;"><?= htmlspecialchars($h['features']) ?></p>
             </td>
-            <td style="padding:16px;text-align:right;font-family:'Raleway',sans-serif;font-weight:800;font-size:14px;color:#1a2118;white-space:nowrap;">Rp <?= htmlspecialchars($h['low']) ?></td>
-            <td style="padding:16px;text-align:right;font-family:'Raleway',sans-serif;font-weight:800;font-size:14px;color:#c4964a;white-space:nowrap;">Rp <?= htmlspecialchars($h['high']) ?></td>
+            <td style="padding:16px;text-align:right;font-family:'MuseoModerno',sans-serif;font-weight:800;font-size:14px;color:#1a2118;white-space:nowrap;">Rp <?= htmlspecialchars($h['low']) ?></td>
+            <td style="padding:16px;text-align:right;font-family:'MuseoModerno',sans-serif;font-weight:800;font-size:14px;color:#c4964a;white-space:nowrap;">Rp <?= htmlspecialchars($h['high']) ?></td>
             <td style="padding:16px;font-size:12px;color:#3d3228;"><?= htmlspecialchars($h['bf']) ?></td>
             <td style="padding:16px;">
-              <p style="font-family:'Raleway',sans-serif;font-weight:700;font-size:12px;color:#2cb896;">⭐ <?= htmlspecialchars($h['rating']) ?></p>
+              <p style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:12px;color:#2cb896;">⭐ <?= htmlspecialchars($h['rating']) ?></p>
             </td>
             <td style="padding:16px;font-size:12px;color:#8a7d6e;white-space:nowrap;"><?= htmlspecialchars($h['contact']) ?></td>
           </tr>
@@ -107,14 +107,14 @@ include 'includes/nav.php';
           <p class="hotel-card__type"><?= htmlspecialchars($h['type']) ?></p>
           <p class="hotel-card__name"><?= htmlspecialchars($h['name']) ?></p>
           <p class="hotel-card__room"><?= htmlspecialchars($h['room']) ?></p>
-          <p style="font-family:'Lato',sans-serif;font-size:11px;color:#8a7d6e;margin-top:4px;line-height:1.5;"><?= htmlspecialchars($h['features']) ?></p>
+          <p style="font-family:'MuseoModerno',sans-serif;font-size:11px;color:#8a7d6e;margin-top:4px;line-height:1.5;"><?= htmlspecialchars($h['features']) ?></p>
           <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:flex-end;">
             <div>
-              <p style="font-family:'Raleway',sans-serif;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:#8a7d6e;">Low / High Season</p>
-              <p style="font-family:'Raleway',sans-serif;font-weight:800;font-size:14px;color:#1a2118;margin-top:2px;">Rp <?= htmlspecialchars($h['low']) ?> – <?= htmlspecialchars($h['high']) ?></p>
-              <p style="font-family:'Lato',sans-serif;font-size:10px;color:#8a7d6e;">incl. breakfast · per night</p>
+              <p style="font-family:'MuseoModerno',sans-serif;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:#8a7d6e;">Low / High Season</p>
+              <p style="font-family:'MuseoModerno',sans-serif;font-weight:800;font-size:14px;color:#1a2118;margin-top:2px;">Rp <?= htmlspecialchars($h['low']) ?> – <?= htmlspecialchars($h['high']) ?></p>
+              <p style="font-family:'MuseoModerno',sans-serif;font-size:10px;color:#8a7d6e;">incl. breakfast · per night</p>
             </div>
-            <p style="font-family:'Raleway',sans-serif;font-weight:700;font-size:12px;color:#2cb896;">⭐ <?= htmlspecialchars($h['rating']) ?></p>
+            <p style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:12px;color:#2cb896;">⭐ <?= htmlspecialchars($h['rating']) ?></p>
           </div>
         </div>
       </div>

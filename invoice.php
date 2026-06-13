@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once 'config.php';
 require_once 'data.php';
 
@@ -332,7 +331,7 @@ $stages = [
         <div style="background:#fff;padding:12px 16px;border:1px solid #e0d8ce;">
           <p style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8a7d6e;margin-bottom:6px;">Bank Transfer Details</p>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
-            <?php foreach ([['Bank','Bank Central Asia (BCA)'],['Account Name',SITE_COMPANY],['Account No.','1234567890']] as [$k,$v]): ?>
+            <?php foreach ([['Bank', BANK_NAME], ['Account Name', BANK_HOLDER], ['Account No.', BANK_ACCOUNT]] as [$k,$v]): ?>
             <div>
               <p style="font-family:'Museo',sans-serif;font-size:11px;color:#8a7d6e;"><?= $k ?></p>
               <p style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:13px;color:#1a2118;"><?= $v ?></p>

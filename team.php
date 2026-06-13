@@ -24,7 +24,7 @@ $values = [
   <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(26,33,24,.35),rgba(26,33,24,.68));"></div>
   <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:48px 72px;">
     <span class="eyebrow" style="color:rgba(255,255,255,.55);">The People Behind Your Journey</span>
-    <h1 style="font-family:'Raleway',sans-serif;font-weight:900;font-size:56px;color:#fff;line-height:1.05;margin-bottom:10px;">Our Team</h1>
+    <h1 style="font-family:'MuseoModerno',sans-serif;font-weight:900;font-size:56px;color:#fff;line-height:1.05;margin-bottom:10px;">Our Team</h1>
     <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:21px;color:rgba(255,255,255,.65);">Born in Lombok. Passionate about their island.</p>
   </div>
 </div>
@@ -40,8 +40,8 @@ $values = [
     <div>
       <?php foreach ([['8','Team Members'],['12+','Years of Experience (Founder)'],['5','Languages Spoken'],['400+','Rinjani Summits Completed']] as [$n,$l]): ?>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid rgba(255,255,255,.07);">
-        <p style="font-family:'Raleway',sans-serif;font-weight:900;font-size:32px;color:#2cb896;"><?= $n ?></p>
-        <p style="font-family:'Raleway',sans-serif;font-weight:500;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);text-align:right;max-width:140px;"><?= $l ?></p>
+        <p style="font-family:'MuseoModerno',sans-serif;font-weight:900;font-size:32px;color:#2cb896;"><?= $n ?></p>
+        <p style="font-family:'MuseoModerno',sans-serif;font-weight:500;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);text-align:right;max-width:140px;"><?= $l ?></p>
       </div>
       <?php endforeach; ?>
     </div>
@@ -81,8 +81,8 @@ $values = [
       <?php foreach ($values as [$icon,$title,$body]): ?>
       <div class="value-card" style="background:#f7f4ee;padding:32px;transition:background .2s;">
         <div style="font-size:22px;color:#2cb896;margin-bottom:16px;"><?= $icon ?></div>
-        <p style="font-family:'Raleway',sans-serif;font-weight:800;font-size:17px;color:#1a2118;margin-bottom:10px;"><?= htmlspecialchars($title) ?></p>
-        <p style="font-family:'Lato',sans-serif;font-size:13.5px;color:#8a7d6e;line-height:1.8;"><?= htmlspecialchars($body) ?></p>
+        <p style="font-family:'MuseoModerno',sans-serif;font-weight:800;font-size:17px;color:#1a2118;margin-bottom:10px;"><?= htmlspecialchars($title) ?></p>
+        <p style="font-family:'MuseoModerno',sans-serif;font-size:13.5px;color:#8a7d6e;line-height:1.8;"><?= htmlspecialchars($body) ?></p>
       </div>
       <?php endforeach; ?>
     </div>
@@ -93,12 +93,12 @@ $values = [
 <div style="background:#1a2118;padding:72px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:32px;" id="careers">
   <div>
     <span class="eyebrow" style="color:rgba(255,255,255,.35);">Careers</span>
-    <h2 style="font-family:'Raleway',sans-serif;font-weight:900;font-size:34px;color:#fff;margin-bottom:10px;">Join Our Team</h2>
+    <h2 style="font-family:'MuseoModerno',sans-serif;font-weight:900;font-size:34px;color:#fff;margin-bottom:10px;">Join Our Team</h2>
     <p class="section-body" style="color:rgba(255,255,255,.5);max-width:480px;">We're always looking for exceptional local guides, hospitality professionals, and operations staff who love Lombok.</p>
   </div>
   <div style="flex-shrink:0;display:flex;flex-direction:column;gap:10px;">
     <a href="mailto:careers@lnc-travel.com" class="btn btn--primary">Send Your Application</a>
-    <p style="font-family:'Lato',sans-serif;font-size:12px;color:rgba(255,255,255,.3);text-align:center;">careers@lnc-travel.com</p>
+    <p style="font-family:'MuseoModerno',sans-serif;font-size:12px;color:rgba(255,255,255,.3);text-align:center;">careers@lnc-travel.com</p>
   </div>
 </div>
 
