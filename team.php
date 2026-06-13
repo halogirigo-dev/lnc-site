@@ -4,6 +4,23 @@ require_once 'data.php';
 $page_title = 'Our Team';
 $page_desc  = 'Meet the guides and team behind PT Lombok Nature Culture — born in Lombok, passionate about their island.';
 include 'includes/head.php';
+
+// Structured data: Person schema for each team member
+$site_url_sd = defined('SITE_URL') ? rtrim(SITE_URL, '/') : 'https://lomboknatureculture.com';
+$sd_persons = array_map(fn($m) => [
+  '@type'       => 'Person',
+  'name'        => $m['name'],
+  'jobTitle'    => $m['role'],
+  'description' => $m['bio'],
+  'knowsLanguage' => array_map('trim', explode(',', $m['lang'])),
+  'worksFor'    => ['@type' => 'TravelAgency', 'name' => SITE_COMPANY, 'url' => $site_url_sd],
+  'url'         => $site_url_sd . '/team',
+], $team);
+echo '<script type="application/ld+json">' . json_encode([
+  '@context' => 'https://schema.org',
+  '@graph'   => $sd_persons,
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>' . PHP_EOL;
+
 include 'includes/nav.php';
 
 $values = [
@@ -25,7 +42,7 @@ $values = [
   <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:48px 72px;">
     <span class="eyebrow" style="color:rgba(255,255,255,.55);">The People Behind Your Journey</span>
     <h1 style="font-family:'MuseoModerno',sans-serif;font-weight:900;font-size:56px;color:#fff;line-height:1.05;margin-bottom:10px;">Our Team</h1>
-    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:21px;color:rgba(255,255,255,.65);">Born in Lombok. Passionate about their island.</p>
+    <p style="font-family:'MuseoModerno',sans-serif;font-style:italic;font-size:20px;color:rgba(255,255,255,.65);">Born in Lombok. Passionate about their island.</p>
   </div>
 </div>
 
@@ -34,7 +51,7 @@ $values = [
   <div class="container" style="display:grid;grid-template-columns:3fr 2fr;gap:64px;align-items:center;">
     <div>
       <span class="eyebrow" style="color:rgba(255,255,255,.4);">Who We Are</span>
-      <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:24px;color:rgba(255,255,255,.85);line-height:1.6;margin-bottom:20px;">"We are not a travel agency with guides. We are guides who built a travel agency."</p>
+      <p style="font-family:'MuseoModerno',sans-serif;font-style:italic;font-size:22px;color:rgba(255,255,255,.85);line-height:1.6;margin-bottom:20px;">"We are not a travel agency with guides. We are guides who built a travel agency."</p>
       <p class="section-body" style="color:rgba(255,255,255,.5);">Every person on our team was born or has lived in Lombok for most of their life. We hire for passion, local knowledge, and character — not certificates alone.</p>
     </div>
     <div>

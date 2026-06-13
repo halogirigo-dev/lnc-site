@@ -66,20 +66,43 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ── EXPERIENCE PAGE TABS ── */
-  const expTabBtns   = document.querySelectorAll('.exp-tab-btn');
-  const expTabPanels = document.querySelectorAll('.exp-tab-panel');
+  const expTabBtns   = document.querySelectorAll('.exp-tab-btn[role="tab"]');
+  const expTabPanels = document.querySelectorAll('.exp-tab-panel[role="tabpanel"]');
   if (expTabBtns.length) {
+    function activateExpTab(btn, panel) {
+      expTabBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+        b.setAttribute('tabindex', '-1');
+      });
+      expTabPanels.forEach(p => { p.hidden = true; });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      btn.setAttribute('tabindex', '0');
+      if (panel) panel.hidden = false;
+    }
     expTabBtns.forEach((btn, i) => {
       btn.addEventListener('click', () => {
-        expTabBtns.forEach(b => b.classList.remove('active'));
-        expTabPanels.forEach(p => p.style.display = 'none');
-        btn.classList.add('active');
-        if (expTabPanels[i]) expTabPanels[i].style.display = '';
-        window.scrollTo({ top: document.querySelector('.exp-tabs').offsetTop - 72, behavior: 'smooth' });
+        activateExpTab(btn, expTabPanels[i]);
+        const tabsEl = document.querySelector('.exp-tabs');
+        if (tabsEl) window.scrollTo({ top: tabsEl.offsetTop - 72, behavior: 'smooth' });
+      });
+      // Arrow key navigation for keyboard users
+      btn.addEventListener('keydown', e => {
+        const idx = Array.from(expTabBtns).indexOf(btn);
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          const next = expTabBtns[(idx + 1) % expTabBtns.length];
+          next.focus(); activateExpTab(next, expTabPanels[(idx + 1) % expTabBtns.length]);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const prev = expTabBtns[(idx - 1 + expTabBtns.length) % expTabBtns.length];
+          prev.focus(); activateExpTab(prev, expTabPanels[(idx - 1 + expTabBtns.length) % expTabBtns.length]);
+        }
       });
     });
-    expTabPanels.forEach((p, i) => p.style.display = i === 0 ? '' : 'none');
-    expTabBtns[0] && expTabBtns[0].classList.add('active');
+    // Init: first tab active (already set via PHP hidden attr, just sync JS state)
+    if (expTabBtns[0]) expTabBtns[0].classList.add('active');
   }
 
   /* ── INVOICE STAGE TABS ── */
@@ -497,16 +520,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (!hamburger || !mobileMenu) return;
 
+  function isOpen() {
+    return mobileMenu.classList.contains('open');
+  }
+
   function openMenu() {
     mobileMenu.classList.add('open');
+    mobileMenu.removeAttribute('hidden');
     hamburger.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
+    // Move focus into menu for keyboard/screen reader users
+    const firstLink = mobileMenu.querySelector('.nav__mobile-link, a, button');
+    if (firstLink) firstLink.focus();
   }
 
   function closeMenu() {
     mobileMenu.classList.remove('open');
+    mobileMenu.setAttribute('hidden', '');
     hamburger.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
+    hamburger.focus();
   }
 
   hamburger.addEventListener('click', openMenu);
@@ -519,12 +552,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Close on ESC key
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && mobileMenu.classList.contains('open')) closeMenu();
+    if (e.key === 'Escape' && isOpen()) closeMenu();
   });
 
   // Close on overlay tap (clicking the dark backdrop outside the links area)
   mobileMenu.addEventListener('click', e => {
     if (e.target === mobileMenu) closeMenu();
+  });
+
+  // Trap focus inside menu when open
+  mobileMenu.addEventListener('keydown', e => {
+    if (e.key !== 'Tab' || !isOpen()) return;
+    const focusable = Array.from(mobileMenu.querySelectorAll('a, button, [tabindex]:not([tabindex="-1"])'));
+    const first = focusable[0];
+    const last  = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault(); first.focus();
+    }
   });
 })();
 

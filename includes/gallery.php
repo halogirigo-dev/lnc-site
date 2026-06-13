@@ -21,15 +21,12 @@
         $spanStyle = !empty($p['span']) ? 'grid-column:span '.$p['span'].';' : '';
         $webp = preg_replace('/\.(jpe?g|JPE?G|png|PNG)$/', '.webp', $p['file']);
       ?>
-      <div class="gallery-item" style="height:<?= $p['h'] ?>px;overflow:hidden;cursor:pointer;<?= $spanStyle ?>">
+      <div class="gallery-item" style="height:<?= $p['h'] ?>px;<?= $spanStyle ?>">
         <picture>
           <source srcset="<?= UPLOADS_URL ?>/gallery/<?= htmlspecialchars($webp) ?>" type="image/webp">
           <img
             src="<?= UPLOADS_URL ?>/gallery/<?= htmlspecialchars($p['file']) ?>"
             alt="<?= htmlspecialchars($p['alt']) ?>"
-            style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease;"
-            onmouseover="this.style.transform='scale(1.07)'"
-            onmouseout="this.style.transform='scale(1)'"
             loading="lazy"
           >
         </picture>

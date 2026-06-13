@@ -28,7 +28,7 @@
       </div>
     </div>
     <div style="text-align:center;margin-top:56px;">
-      <a href="booking.php" class="btn btn--primary">Start the Conversation</a>
+      <a href="/booking" class="btn btn--primary">Start the Conversation</a>
     </div>
   </div>
 </section>

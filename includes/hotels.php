@@ -71,7 +71,7 @@
     </div>
 
     <div style="text-align:center;margin-top:40px;">
-      <a href="hotels.php" class="btn btn--outline">View Full Hotel List</a>
+      <a href="/hotels" class="btn btn--outline">View Full Hotel List</a>
     </div>
 
     <!-- Policy note -->

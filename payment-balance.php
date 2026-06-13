@@ -62,6 +62,7 @@ $page_title = 'Pay Remaining Balance — ' . $ref;
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
 <title><?= htmlspecialchars($page_title) ?> — <?= SITE_NAME ?></title>
 <link rel="icon" type="image/png" href="/uploads/logo-1777215811265.png">
 <link rel="stylesheet" href="<?= ASSETS_URL ?>/css/style.css?v=<?= filemtime(__DIR__.'/assets/css/style.css') ?>">

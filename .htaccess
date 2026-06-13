@@ -1,12 +1,25 @@
 # ─── LNC PHP Site — Hostinger .htaccess ─────────────────────────────────────
-# Clean version: WordPress and LiteSpeed WP Cache blocks removed.
-# Upload this file to public_html/ to replace the existing one.
+# Security-hardened. Do not remove protections below.
 
 Options -Indexes
 RewriteEngine On
 
 # ── Block sensitive directories ───────────────────────────────────────────────
 RewriteRule ^\.private/.*$  - [F,L]
+
+# ── Block environment & config files from direct web access ──────────────────
+<FilesMatch "^(\.env|\.env\.local|\.env\..+)$">
+  Require all denied
+</FilesMatch>
+<Files "env.php">
+  Require all denied
+</Files>
+<Files "db.php">
+  Require all denied
+</Files>
+<Files "create-tables.php">
+  Require all denied
+</Files>
 
 # ── Block deploy webhook from browser (POST only, no GET browsing) ────────────
 <Files "deploy.php">
@@ -39,12 +52,16 @@ RewriteRule ^thank-you/?$    thank-you.php    [L,QSA]
 
 # ── Security headers ──────────────────────────────────────────────────────────
 <IfModule mod_headers.c>
-  Header always set X-Content-Type-Options  "nosniff"
-  Header always set X-Frame-Options         "SAMEORIGIN"
-  Header always set Referrer-Policy         "strict-origin-when-cross-origin"
-  Header always set X-XSS-Protection        "1; mode=block"
-  Header always set Permissions-Policy      "camera=(), microphone=(), geolocation=()"
-  Header always set Content-Security-Policy "upgrade-insecure-requests"
+  Header always set X-Content-Type-Options                "nosniff"
+  Header always set X-Frame-Options                       "SAMEORIGIN"
+  Header always set Referrer-Policy                       "strict-origin-when-cross-origin"
+  Header always set X-XSS-Protection                      "1; mode=block"
+  Header always set Permissions-Policy                    "camera=(), microphone=(), geolocation=(), payment=()"
+  Header always set Content-Security-Policy               "upgrade-insecure-requests; default-src 'self' https:; script-src 'self' 'unsafe-inline' https://app.sandbox.midtrans.com https://app.midtrans.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://app.sandbox.midtrans.com https://app.midtrans.com; frame-src https://app.sandbox.midtrans.com https://app.midtrans.com;"
+  Header always set X-Permitted-Cross-Domain-Policies     "none"
+  Header always set Cross-Origin-Opener-Policy            "same-origin-allow-popups"
+  # HSTS: 1 year, include subdomains (enable once HTTPS is confirmed stable)
+  # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
 </IfModule>
 
 # ── Cache static assets ───────────────────────────────────────────────────────
@@ -70,5 +87,5 @@ RewriteRule ^thank-you/?$    thank-you.php    [L,QSA]
 </IfModule>
 
 # ── Error pages ───────────────────────────────────────────────────────────────
-ErrorDocument 404 /index.php
+ErrorDocument 404 /404.php
 ErrorDocument 403 /index.php

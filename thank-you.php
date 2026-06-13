@@ -65,6 +65,7 @@ $page_title  = match($variant) {
   'quote'   => 'Request Received — ' . $ref,
   default   => 'Request Received — ' . $ref,
 };
+$page_noindex = true;
 
 include 'includes/head.php';
 include 'includes/nav.php';

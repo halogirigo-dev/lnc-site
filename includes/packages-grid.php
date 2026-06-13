@@ -42,7 +42,7 @@
             <p style="font-family:'MuseoModerno',sans-serif;font-size:10px;color:#8a7d6e;">/ pax (min <?= $feat['min_pax'] ?> pax) · excl. hotel</p>
           </div>
         </div>
-        <a href="experiences.php?id=<?= $feat['id'] ?>" class="btn btn--primary" style="width:fit-content;">View Experience →</a>
+        <a href="/experiences?id=<?= $feat['id'] ?>" class="btn btn--primary" style="width:fit-content;">View Experience →</a>
       </div>
     </div>
 
@@ -76,7 +76,7 @@
             </div>
             <span style="font-family:'MuseoModerno',sans-serif;font-weight:600;font-size:11px;color:#8a7d6e;text-transform:uppercase;letter-spacing:.1em;"><?= htmlspecialchars($pkg['duration']) ?></span>
           </div>
-          <a href="experiences.php?id=<?= $pkg['id'] ?>" class="btn btn--dark btn--full btn--sm" style="margin-top:12px;">View →</a>
+          <a href="/experiences?id=<?= $pkg['id'] ?>" class="btn btn--dark btn--full btn--sm" style="margin-top:12px;">View →</a>
         </div>
       </div>
       <?php endforeach; ?>
@@ -106,14 +106,14 @@
           <p class="pkg-card__id"><?= $pkg['id'] ?> · <?= htmlspecialchars($pkg['duration']) ?></p>
           <h3 class="pkg-card__title"><?= htmlspecialchars($pkg['title']) ?></h3>
           <p class="pkg-card__sub"><?= htmlspecialchars($pkg['subtitle']) ?></p>
-          <a href="experiences.php?id=<?= $pkg['id'] ?>" class="btn btn--primary btn--full btn--sm" style="margin-top:16px;">Request Quote →</a>
+          <a href="/experiences?id=<?= $pkg['id'] ?>" class="btn btn--primary btn--full btn--sm" style="margin-top:16px;">Request Quote →</a>
         </div>
       </div>
       <?php endforeach; ?>
     </div>
 
     <div style="text-align:center;margin-top:40px;">
-      <a href="experiences.php" class="btn btn--outline">View All Packages</a>
+      <a href="/experiences" class="btn btn--outline">View All Packages</a>
     </div>
   </div>
 </section>

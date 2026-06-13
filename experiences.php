@@ -4,6 +4,34 @@ require_once 'data.php';
 $page_title = 'Our Experiences & Packages';
 $page_desc  = 'Browse all Lombok Nature Culture tour packages — short stay, long stay, cultural, island, adventure and honeymoon experiences in Lombok, Indonesia.';
 include 'includes/head.php';
+
+// Structured data: ItemList of all packages
+$site_url_sd = defined('SITE_URL') ? rtrim(SITE_URL, '/') : 'https://lomboknatureculture.com';
+$sd_items = [];
+foreach (array_merge($packages_short, $packages_long) as $i => $pkg) {
+  $sd_items[] = [
+    '@type'    => 'ListItem',
+    'position' => $i + 1,
+    'item'     => [
+      '@type'       => 'TouristTrip',
+      'name'        => $pkg['title'],
+      'description' => $pkg['subtitle'],
+      'url'         => $site_url_sd . '/experiences?id=' . $pkg['id'],
+      'touristType' => ucfirst($pkg['category']),
+      'itinerary'   => ['@type' => 'ItemList', 'name' => $pkg['title'] . ' Itinerary'],
+      'provider'    => ['@type' => 'TravelAgency', 'name' => SITE_COMPANY, 'url' => $site_url_sd],
+    ],
+  ];
+}
+echo '<script type="application/ld+json">' . json_encode([
+  '@context'        => 'https://schema.org',
+  '@type'           => 'ItemList',
+  'name'            => 'Lombok Nature Culture — Tour Packages',
+  'description'     => $page_desc,
+  'url'             => $site_url_sd . '/experiences',
+  'itemListElement' => $sd_items,
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>' . PHP_EOL;
+
 include 'includes/nav.php';
 
 // Determine active package
@@ -30,7 +58,7 @@ if ($active_id) {
 </div>
 
 <!-- Tab Bar -->
-<div class="exp-tabs">
+<div class="exp-tabs" role="tablist" aria-label="Experience categories">
   <?php
   $tab_cats = [
     ['id'=>'all',       'label'=>'All Packages'],
@@ -41,14 +69,26 @@ if ($active_id) {
     ['id'=>'long',      'label'=>'◉ Long Stay'],
     ['id'=>'bali',      'label'=>'Bali Packages'],
   ];
-  foreach ($tab_cats as $cat): ?>
-  <button class="exp-tab-btn" data-cat="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['label']) ?></button>
+  foreach ($tab_cats as $i => $cat): ?>
+  <button class="exp-tab-btn"
+    role="tab"
+    data-cat="<?= $cat['id'] ?>"
+    id="tab-<?= $cat['id'] ?>"
+    aria-controls="panel-<?= $cat['id'] ?>"
+    aria-selected="<?= $i === 0 ? 'true' : 'false' ?>"
+    tabindex="<?= $i === 0 ? '0' : '-1' ?>"
+  ><?= htmlspecialchars($cat['label']) ?></button>
   <?php endforeach; ?>
 </div>
 
 <!-- Package Panels -->
-<?php foreach ($tab_cats as $tab): ?>
-<div class="exp-tab-panel" data-cat="<?= $tab['id'] ?>">
+<?php foreach ($tab_cats as $i => $tab): ?>
+<div class="exp-tab-panel"
+  role="tabpanel"
+  id="panel-<?= $tab['id'] ?>"
+  aria-labelledby="tab-<?= $tab['id'] ?>"
+  data-cat="<?= $tab['id'] ?>"
+  <?= $i > 0 ? 'hidden' : '' ?>>
   <?php
   if ($tab['id'] === 'all') $show = $all_packages;
   elseif ($tab['id'] === 'bali') $show = $packages_bali;

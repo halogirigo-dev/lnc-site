@@ -4,6 +4,32 @@ require_once 'data.php';
 $page_title = 'Hotel Partners';
 $page_desc  = 'Curated accommodation partners of PT Lombok Nature Culture across all zones of Lombok and the Gili Islands.';
 include 'includes/head.php';
+
+// Structured data: LodgingBusiness for each partner hotel
+$site_url_sd = defined('SITE_URL') ? rtrim(SITE_URL, '/') : 'https://lomboknatureculture.com';
+$sd_hotels = [];
+foreach ($hotels as $zone) {
+  foreach ($zone['properties'] as $h) {
+    $price_low = (int) str_replace(['.', ','], ['', ''], $h['low']);
+    $sd_hotels[] = [
+      '@type'         => 'LodgingBusiness',
+      'name'          => $h['name'],
+      '@id'           => $site_url_sd . '/hotels#' . strtolower(preg_replace('/[^a-z0-9]/i', '-', $h['name'])),
+      'description'   => $h['review'],
+      'priceRange'    => 'Rp ' . $h['low'] . ' – ' . $h['high'],
+      'address'       => [
+        '@type'           => 'PostalAddress',
+        'addressLocality' => $zone['zone'] . ', ' . $zone['area'],
+        'addressCountry'  => 'ID',
+      ],
+    ];
+  }
+}
+echo '<script type="application/ld+json">' . json_encode([
+  '@context' => 'https://schema.org',
+  '@graph'   => $sd_hotels,
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>' . PHP_EOL;
+
 include 'includes/nav.php';
 ?>
 

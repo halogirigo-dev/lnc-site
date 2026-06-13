@@ -135,8 +135,9 @@ $status_cfg = match($invoice['status'] ?? 'pending_payment') {
   default                    => ['Awaiting Deposit',  '#c4964a', '#fdf6ec'],
 };
 
-$page_title = 'Invoice — ' . $invoice['ref'];
-$page_desc  = 'PT Lombok Nature Culture journey proposal for ' . $invoice['guest']['name'];
+$page_title   = 'Invoice — ' . $invoice['ref'];
+$page_desc    = 'PT Lombok Nature Culture journey proposal for ' . $invoice['guest']['name'];
+$page_noindex = true;
 include 'includes/head.php';
 include 'includes/nav.php';
 

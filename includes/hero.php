@@ -2,7 +2,7 @@
 <section class="hero">
   <picture class="hero__bg">
     <source srcset="/uploads/hero-background.webp" type="image/webp">
-    <img src="/uploads/hero-background.jpg" alt="" aria-hidden="true" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+    <img src="/uploads/hero-background.jpg" alt="" aria-hidden="true" fetchpriority="high" decoding="sync" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
   </picture>
   <div class="hero__overlay"></div>
   <div class="hero__content">
@@ -15,12 +15,12 @@
       Private expeditions, cultural encounters, and honeymoon escapes — each crafted exclusively for you.
     </p>
     <div class="hero__ctas">
-      <a href="booking.php" class="btn btn--primary">Plan My Journey →</a>
+      <a href="/booking" class="btn btn--primary">Plan My Journey →</a>
       <a href="https://wa.me/<?= SITE_WA ?>?text=Hi%20LNC%2C%20I%27d%20like%20to%20chat%20about%20a%20Lombok%20journey"
-         class="btn-ghost" target="_blank" rel="noopener noreferrer">
+         class="btn-ghost" target="_blank" rel="noopener noreferrer" aria-label="Chat with Lombok Nature Culture on WhatsApp">
         💬 Chat on WhatsApp
       </a>
-      <a href="experiences.php" class="btn btn--outline-light">Explore Experiences</a>
+      <a href="/experiences" class="btn btn--outline-light">Explore Experiences</a>
     </div>
   </div>
   <div class="hero__scroll">

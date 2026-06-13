@@ -24,11 +24,8 @@
       <div class="member-card reveal reveal--d<?= $i+1 ?>">
         <!-- Photo or portrait placeholder -->
         <?php if ($hasImg): ?>
-        <div style="height:260px;overflow:hidden;">
-          <img src="<?= $imgUrl ?>" alt="<?= htmlspecialchars($m['name']) ?>"
-               style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease;"
-               onmouseover="this.style.transform='scale(1.05)'"
-               onmouseout="this.style.transform='scale(1)'">
+        <div class="member-card__photo">
+          <img src="<?= $imgUrl ?>" alt="<?= htmlspecialchars($m['name']) ?>, <?= htmlspecialchars($m['role']) ?>" loading="lazy">
         </div>
         <?php else: ?>
         <div style="height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#1a2118 0%,#243028 100%);position:relative;overflow:hidden;">
@@ -53,7 +50,7 @@
     </div>
 
     <div style="text-align:center;margin-top:48px;" class="reveal">
-      <a href="team.php" class="btn btn--outline">Meet the Full Team</a>
+      <a href="/team" class="btn btn--outline">Meet the Full Team</a>
     </div>
   </div>
 </section>

@@ -28,19 +28,21 @@ $error_msgs = [
 $error = isset($_GET['error'], $error_msgs[$_GET['error']]) ? $error_msgs[$_GET['error']] : '';
 ?>
 
+<a href="#booking-form" class="skip-link">Skip to booking form</a>
+<main id="main-content" tabindex="-1">
 <!-- Top Bar -->
 <?php if ($error): ?>
 <div class="booking-error-banner" role="alert"><?= htmlspecialchars($error) ?></div>
 <?php endif; ?>
 <div class="booking-topbar">
-  <a href="index.php" class="booking-topbar__brand">
-    <img src="<?= UPLOADS_URL ?>/logo-1777215811265.png" class="booking-topbar__logo" alt="<?= SITE_NAME ?>">
+  <a href="/" class="booking-topbar__brand">
+    <img src="<?= UPLOADS_URL ?>/logo-1777215811265.png" class="booking-topbar__logo" alt="<?= SITE_NAME ?> logo">
     <div>
       <div class="booking-topbar__name">Lombok Nature</div>
       <div class="booking-topbar__sub">Culture</div>
     </div>
   </a>
-  <a href="index.php" class="booking-topbar__back">← Back to Site</a>
+  <a href="/" class="booking-topbar__back">← Back to Site</a>
 </div>
 
 <!-- Progress Bar -->
@@ -242,7 +244,7 @@ $error = isset($_GET['error'], $error_msgs[$_GET['error']]) ? $error_msgs[$_GET[
 <!-- Bottom Navigation -->
 <div class="booking-foot" id="booking-foot">
   <button id="btn-back" class="btn btn--outline btn--sm" style="display:none;">← Back</button>
-  <a href="index.php" class="btn btn--outline btn--sm" id="btn-cancel">Cancel</a>
+  <a href="/" class="btn btn--outline btn--sm" id="btn-cancel">Cancel</a>
   <button id="btn-next" class="btn btn--primary btn--sm">Continue →</button>
 </div>
 
