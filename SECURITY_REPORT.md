@@ -1,6 +1,7 @@
-# Lombok Nature Culture — Security Report
-**Date:** June 2026  
-**Classification:** CONFIDENTIAL
+# SECURITY REPORT — Lombok Nature Culture
+**Date:** 2026-06-13 (updated)  
+**Scope:** Full security audit post-migration
+**Previous:** Pre-migration audit (June 2026)
 
 ---
 
