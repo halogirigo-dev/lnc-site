@@ -15,7 +15,7 @@ if (!$booking && isset($_SESSION['lnc_booking'])) {
     $ref = $sref;
     $booking = [
       'ref'             => $sref,
-      'status'          => 'pending_payment',
+      'status'          => 'new',
       'package_id'      => $sess['package_id'] ?? '',
       'package_title'   => $sess['package_title'] ?? '',
       'package_duration'=> $sess['package_duration'] ?? '',
@@ -27,10 +27,6 @@ if (!$booking && isset($_SESSION['lnc_booking'])) {
       'name'            => $sess['name'] ?? '',
       'email'           => $sess['email'] ?? '',
     ];
-    // Infer status from URL type param when coming from session
-    if ($type === 'quote' || ($booking['total_amount'] == 0)) {
-      $booking['status'] = 'quote';
-    }
   }
 }
 
@@ -40,8 +36,8 @@ if (!$booking) {
 }
 
 $status        = $booking['status'];
-$is_quote      = ($type === 'quote' || $status === 'quote' || (int)$booking['total_amount'] === 0);
-$is_fully_paid = in_array($status, ['balance_paid', 'confirmed']);
+$is_quote      = ($type === 'quote' || in_array($status, ['new', 'contacted', 'quoted', 'quote']) || (int)$booking['total_amount'] === 0);
+$is_fully_paid = in_array($status, ['balance_paid', 'confirmed', 'completed']);
 $is_deposit    = ($status === 'deposit_paid');
 
 // Determine variant
@@ -165,16 +161,20 @@ include 'includes/nav.php';
 <div style="background:#fff;border:1px solid #e0d8ce;padding:28px 32px;margin-bottom:24px;">
   <p style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#8a7d6e;margin-bottom:6px;">Your Reference Number</p>
   <p style="font-family:'MuseoModerno',sans-serif;font-weight:900;font-size:28px;color:#1a2118;letter-spacing:.06em;"><?= htmlspecialchars($ref) ?></p>
-  <?php if (!empty($booking['package_title'])): ?>
   <div style="border-top:1px solid #f0ebe3;margin-top:16px;padding-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <?php if (!empty($booking['package_title'])): ?>
     <div><p style="font-family:'MuseoModerno',sans-serif;font-weight:600;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#8a7d6e;margin-bottom:4px;">Package</p>
-    <p style="font-family:'Museo',sans-serif;font-size:13px;color:#1a2118;"><?= htmlspecialchars($booking['package_id'] . ' — ' . $booking['package_title']) ?></p></div>
+    <p style="font-family:'Museo',sans-serif;font-size:13px;color:#1a2118;"><?= htmlspecialchars(($booking['package_id'] ? $booking['package_id'] . ' — ' : '') . $booking['package_title']) ?></p></div>
+    <?php endif; ?>
     <?php if (!empty($booking['name'])): ?>
     <div><p style="font-family:'MuseoModerno',sans-serif;font-weight:600;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#8a7d6e;margin-bottom:4px;">Name</p>
     <p style="font-family:'Museo',sans-serif;font-size:13px;color:#1a2118;"><?= htmlspecialchars($booking['name']) ?></p></div>
     <?php endif; ?>
+    <div><p style="font-family:'MuseoModerno',sans-serif;font-weight:600;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#8a7d6e;margin-bottom:4px;">Travel Dates</p>
+    <p style="font-family:'Museo',sans-serif;font-size:13px;color:#1a2118;"><?= !empty($booking['dates']) ? htmlspecialchars($booking['dates']) : 'To be confirmed' ?></p></div>
+    <div><p style="font-family:'MuseoModerno',sans-serif;font-weight:600;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#8a7d6e;margin-bottom:4px;">Guests</p>
+    <p style="font-family:'Museo',sans-serif;font-size:13px;color:#1a2118;"><?= (int)($booking['guests'] ?? 1) ?> guest<?= (int)($booking['guests'] ?? 1) !== 1 ? 's' : '' ?></p></div>
   </div>
-  <?php endif; ?>
 </div>
 
 <!-- What Happens Next -->

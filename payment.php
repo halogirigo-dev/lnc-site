@@ -56,14 +56,13 @@ if (!$snap_token && !$already_paid) {
       try {
         $db->prepare("
           INSERT INTO payments (booking_ref, payment_type, amount, midtrans_order_id, snap_token)
-          VALUES (:ref, 'deposit', :amount, :oid, :token)
-          ON DUPLICATE KEY UPDATE snap_token = :token2
+          VALUES ($1, 'deposit', $2, $3, $4)
+          ON CONFLICT (booking_ref, payment_type) DO UPDATE SET snap_token = EXCLUDED.snap_token
         ")->execute([
-          ':ref'    => $ref,
-          ':amount' => $booking['deposit_amount'],
-          ':oid'    => $ref . '-DEP',
-          ':token'  => $snap_token,
-          ':token2' => $snap_token,
+          $ref,
+          $booking['deposit_amount'],
+          $ref . '-DEP',
+          $snap_token,
         ]);
       } catch (PDOException $e) {}
     }

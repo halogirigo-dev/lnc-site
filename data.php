@@ -1,6 +1,12 @@
 <?php
 // ─── ALL REAL CONTENT DATA ────────────────────────────────────
-// Source: FIX DRAFT KATALOG.docx, Katalog Short/Long Stay, Hotel Database
+// DB-driven when PostgreSQL is available; hardcoded arrays serve as fallback.
+// NEVER remove the hardcoded arrays — they are the emergency backup.
+
+// Load DB helpers if not already loaded
+if (!function_exists('lnc_get_packages_from_db') && file_exists(__DIR__ . '/db.php')) {
+  require_once __DIR__ . '/db.php';
+}
 
 // ── SERVICE STANDARDS (SOP) ──────────────────────────────────
 $sop = [
@@ -296,6 +302,7 @@ $testimonials = [
 ];
 
 // ── EXPERIENCE CATEGORIES ─────────────────────────────────────
+// (Categories are structural — not stored in DB)
 $categories = [
   ['id'=>'culture',   'label'=>'Culture & Heritage',  'icon'=>'◈','desc'=>'Sasak villages, weaving, temples, and living traditions'],
   ['id'=>'island',    'label'=>'Island Escape',        'icon'=>'◎','desc'=>'Gili Islands, snorkeling, sunset, and island life'],
@@ -303,6 +310,28 @@ $categories = [
   ['id'=>'honeymoon', 'label'=>'Honeymoon & Romance', 'icon'=>'♡','desc'=>'Private villas, candlelit dinners, and intimate moments'],
   ['id'=>'long',      'label'=>'Long Stay (7–14 days)','icon'=>'◉','desc'=>'Full Lombok immersion and multi-zone journeys'],
 ];
+
+// ── DATABASE OVERRIDE (PostgreSQL via Laravel schema) ─────────
+// When DB is available, load live data. Falls back to hardcoded arrays above.
+if (function_exists('lnc_get_packages_from_db')) {
+  $_db_packages = lnc_get_packages_from_db();
+  if (!empty($_db_packages['short'])) $packages_short = $_db_packages['short'];
+  if (!empty($_db_packages['long']))  $packages_long  = $_db_packages['long'];
+  if (!empty($_db_packages['bali']))  $packages_bali  = $_db_packages['bali'];
+  unset($_db_packages);
+
+  $_db_hotels = lnc_get_hotels_from_db();
+  if (!empty($_db_hotels)) $hotels = $_db_hotels;
+  unset($_db_hotels);
+
+  $_db_testimonials = lnc_get_testimonials_from_db();
+  if (!empty($_db_testimonials)) $testimonials = $_db_testimonials;
+  unset($_db_testimonials);
+
+  $_db_team = lnc_get_team_from_db();
+  if (!empty($_db_team)) $team = $_db_team;
+  unset($_db_team);
+}
 
 // Helper: format IDR price
 function fmt_idr($amount) {

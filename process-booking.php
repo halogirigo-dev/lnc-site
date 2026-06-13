@@ -2,7 +2,6 @@
 require_once 'config.php';
 require_once 'data.php';
 require_once 'db.php';
-require_once 'lib/midtrans.php';
 require_once 'includes/email-functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -17,6 +16,26 @@ if (empty($_SESSION['csrf_token']) ||
   exit;
 }
 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+
+// ── Honeypot (bots fill hidden "website" field; humans do not) ──
+if (!empty($_POST['website'])) {
+  // Silent redirect — don't alert bots
+  header('Location: thank-you.php?ref=LNC-BOT-BLOCKED&type=quote');
+  exit;
+}
+
+// ── Basic rate limiting (max 5 submissions per IP per hour) ─────
+$_ip_key = 'lnc_rate_' . md5($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+$_rate   = $_SESSION[$_ip_key] ?? ['count' => 0, 'window' => time()];
+if (time() - $_rate['window'] > 3600) {
+  $_rate = ['count' => 0, 'window' => time()];
+}
+$_rate['count']++;
+$_SESSION[$_ip_key] = $_rate;
+if ($_rate['count'] > 5) {
+  header('Location: booking.php?error=invalid_request');
+  exit;
+}
 
 // ── Sanitise ───────────────────────────────────────────────────
 function clean($val) {
@@ -39,9 +58,15 @@ if (!empty($raw_phone) && !preg_match('/^[+\d\s\-().]{7,20}$/', $raw_phone)) {
 }
 
 // ── Generate ref ───────────────────────────────────────────────
-$year = date('Y');
-$rand = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 5));
-$ref  = "LNC-{$year}-{$rand}";
+// Sequential when DB is available (LNC-YYYY-NNNNN), random fallback for session-only mode
+$_precheck_db = lnc_db();
+if ($_precheck_db) {
+  $ref = lnc_generate_ref($_precheck_db);
+} else {
+  $year = date('Y');
+  $rand = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 5));
+  $ref  = "LNC-{$year}-{$rand}";
+}
 
 // ── Collect form data ──────────────────────────────────────────
 $b = [
@@ -113,83 +138,85 @@ $db = lnc_db();
 
 if ($db) {
   try {
+    // Upsert customer record
+    $customer_id = null;
+    if (!empty($b['email'])) {
+      $db->prepare("
+        INSERT INTO customers (name, email, phone, country, nationality, age_range, source, last_booking_at, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW(), NOW())
+        ON CONFLICT (email) DO UPDATE SET
+          name             = COALESCE(EXCLUDED.name, customers.name),
+          phone            = COALESCE(EXCLUDED.phone, customers.phone),
+          country          = COALESCE(EXCLUDED.country, customers.country),
+          nationality      = COALESCE(EXCLUDED.nationality, customers.nationality),
+          age_range        = COALESCE(EXCLUDED.age_range, customers.age_range),
+          source           = COALESCE(EXCLUDED.source, customers.source),
+          last_booking_at  = NOW(),
+          updated_at       = NOW()
+      ")->execute([
+        $b['name'], $b['email'], $b['phone'], $b['country'],
+        $b['nationality'], $b['age_range'], $b['source'],
+      ]);
+      $customer_id = $db->query("SELECT id FROM customers WHERE email = " . $db->quote($b['email']))->fetchColumn();
+    }
+
+    // Insert booking with status 'new'
     $db->prepare("
       INSERT INTO bookings
-        (ref, status, package_id, package_title, package_duration, package_price_per_pax,
+        (ref, customer_id, status, package_id, package_title, package_duration, package_price_per_pax,
          total_amount, deposit_amount, balance_amount,
          guests, dates, flexibility, accommodation,
          name, email, phone, country, nationality, age_range, source,
-         message, special, budget)
+         message, special, budget, created_at, updated_at)
       VALUES
-        (:ref, 'pending_payment', :pkg_id, :pkg_title, :pkg_dur, :price_pax,
-         :total, :deposit, :balance,
-         :guests, :dates, :flex, :hotel,
-         :name, :email, :phone, :country, :nationality, :age, :source,
-         :msg, :special, :budget)
+        ($1, $2, 'new', $3, $4, $5, $6,
+         $7, $8, $9,
+         $10, $11, $12, $13,
+         $14, $15, $16, $17, $18, $19, $20,
+         $21, $22, $23, NOW(), NOW())
+      ON CONFLICT (ref) DO NOTHING
     ")->execute([
-      ':ref'       => $ref,
-      ':pkg_id'    => $b['package_id'],
-      ':pkg_title' => $b['package_title'],
-      ':pkg_dur'   => $b['package_duration'],
-      ':price_pax' => $b['package_price_per_pax'],
-      ':total'     => $total,
-      ':deposit'   => $deposit,
-      ':balance'   => $balance,
-      ':guests'    => $guests_num,
-      ':dates'     => $b['dates'],
-      ':flex'      => $b['flexibility'],
-      ':hotel'     => $b['accommodation'],
-      ':name'      => $b['name'],
-      ':email'     => $b['email'],
-      ':phone'     => $b['phone'],
-      ':country'   => $b['country'],
-      ':nationality' => $b['nationality'],
-      ':age'       => $b['age_range'],
-      ':source'    => $b['source'],
-      ':msg'       => $b['message'],
-      ':special'   => $b['special'],
-      ':budget'    => $b['budget'],
+      $ref,
+      $customer_id,
+      $b['package_id'],
+      $b['package_title'],
+      $b['package_duration'],
+      $b['package_price_per_pax'],
+      $total,
+      $deposit,
+      $balance,
+      $guests_num,
+      $b['dates'],
+      $b['flexibility'],
+      $b['accommodation'],
+      $b['name'],
+      $b['email'],
+      $b['phone'],
+      $b['country'],
+      $b['nationality'],
+      $b['age_range'],
+      $b['source'],
+      $b['message'],
+      $b['special'],
+      $b['budget'],
     ]);
+
+    // Audit log: record initial 'new' status
+    $db->prepare("
+      INSERT INTO booking_status_logs (booking_ref, from_status, to_status, changed_by, notes, created_at, updated_at)
+      VALUES ($1, NULL, 'new', 'system', 'Booking submitted via website.', NOW(), NOW())
+    ")->execute([$ref]);
+
   } catch (PDOException $e) {
     // Non-fatal — continue without DB
     $db = null;
   }
 }
 
-// ── Route based on price ───────────────────────────────────────
-if ($b['package_price'] > 0 && $db) {
-  // Get Snap token for deposit
-  $snap_params = lnc_format_snap_params($b, 'deposit');
-  $snap_result = lnc_get_snap_token($snap_params);
-
-  if (!isset($snap_result['error'])) {
-    $token = $snap_result['token'];
-    $_SESSION['lnc_snap_token'] = $token;
-
-    // Save to payments table
-    try {
-      $db->prepare("
-        INSERT INTO payments (booking_ref, payment_type, amount, midtrans_order_id, snap_token)
-        VALUES (:ref, 'deposit', :amount, :order_id, :token)
-      ")->execute([
-        ':ref'      => $ref,
-        ':amount'   => $deposit,
-        ':order_id' => $ref . '-DEP',
-        ':token'    => $token,
-      ]);
-    } catch (PDOException $e) { /* non-fatal */ }
-
-    header("Location: payment.php?ref=" . urlencode($ref));
-    exit;
-  }
-  // Snap token failed — fall through to quote flow
-}
-
-// ── Quote / no-DB flow — send emails + redirect ────────────────
+// ── Send notification emails + redirect to thank-you ──────────
 _send_new_request_emails($b, $ref);
 
-$type = $b['package_price'] > 0 ? 'pending' : 'quote';
-header("Location: thank-you.php?ref=" . urlencode($ref) . "&type={$type}");
+header("Location: thank-you.php?ref=" . urlencode($ref) . "&type=quote");
 exit;
 
 // ── Email helpers (quote/request flow) ────────────────────────

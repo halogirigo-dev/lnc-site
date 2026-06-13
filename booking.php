@@ -65,6 +65,7 @@ $error = isset($_GET['error'], $error_msgs[$_GET['error']]) ? $error_msgs[$_GET[
   <div class="booking-content">
     <form id="booking-form" method="POST" action="thank-you.php">
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+      <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
 
       <!-- Step 1: Choose Experience -->
       <div class="booking-step">

@@ -39,12 +39,13 @@ if (!$snap_token) {
       try {
         $db->prepare("
           INSERT INTO payments (booking_ref, payment_type, amount, midtrans_order_id, snap_token)
-          VALUES (:ref, 'balance', :amount, :oid, :token)
+          VALUES ($1, 'balance', $2, $3, $4)
+          ON CONFLICT (booking_ref, payment_type) DO UPDATE SET snap_token = EXCLUDED.snap_token
         ")->execute([
-          ':ref'    => $ref,
-          ':amount' => $booking['balance_amount'],
-          ':oid'    => $ref . '-BAL',
-          ':token'  => $snap_token,
+          $ref,
+          $booking['balance_amount'],
+          $ref . '-BAL',
+          $snap_token,
         ]);
       } catch (PDOException $e) {}
     }

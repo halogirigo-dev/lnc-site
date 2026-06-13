@@ -28,12 +28,6 @@
     <div class="hero__scroll-line"></div>
   </div>
 
-  <!-- Trust Badge -->
-  <div class="trust-badge">
-    <span class="trust-badge__stars">★★★★★</span>
-    <div class="trust-badge__text">4.9 Rating · 500+ Travelers<br>8 Years in Lombok</div>
-  </div>
-
   <!-- Scroll hint -->
   <div class="hero__scroll-hint" aria-hidden="true">
     <span>SCROLL</span>

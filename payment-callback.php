@@ -26,23 +26,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !MIDTRANS_IS_PRODUCTION) {
       $db->prepare("
         UPDATE payments
         SET midtrans_status = 'settlement',
-            midtrans_order_id = :oid,
-            midtrans_transaction_id = :tid,
+            midtrans_order_id = $1,
+            midtrans_transaction_id = $2,
             payment_method = 'demo_simulation',
             paid_at = NOW()
-        WHERE booking_ref = :ref AND payment_type = :ptype
-        LIMIT 1
+        WHERE booking_ref = $3 AND payment_type = $4
       ")->execute([
-        ':oid'   => $order_id,
-        ':tid'   => 'DEMO-TXN-' . strtoupper(substr(md5($ref . $ptype), 0, 8)),
-        ':ref'   => $ref,
-        ':ptype' => $ptype,
+        $order_id,
+        'DEMO-TXN-' . strtoupper(substr(md5($ref . $ptype), 0, 8)),
+        $ref,
+        $ptype,
       ]);
 
       // Update booking status
       $new_status = ($ptype === 'deposit') ? 'deposit_paid' : 'confirmed';
-      $db->prepare("UPDATE bookings SET status = :s, updated_at = NOW() WHERE ref = :r")
-         ->execute([':s' => $new_status, ':r' => $ref]);
+      $db->prepare("UPDATE bookings SET status = $1, updated_at = NOW() WHERE ref = $2")
+         ->execute([$new_status, $ref]);
 
       // Reload booking with updated data
       $booking = lnc_get_booking($ref);
@@ -126,24 +125,23 @@ if (!$db) {
 // Update payment record
 $db->prepare("
   UPDATE payments
-  SET midtrans_status = :status,
-      midtrans_transaction_id = :tid,
-      payment_method = :method,
+  SET midtrans_status = $1,
+      midtrans_transaction_id = $2,
+      payment_method = $3,
       paid_at = NOW()
-  WHERE booking_ref = :ref AND payment_type = :ptype
-  LIMIT 1
+  WHERE booking_ref = $4 AND payment_type = $5
 ")->execute([
-  ':status' => $transaction_status,
-  ':tid'    => $transaction_id,
-  ':method' => $payment_type,
-  ':ref'    => $ref,
-  ':ptype'  => $ptype,
+  $transaction_status,
+  $transaction_id,
+  $payment_type,
+  $ref,
+  $ptype,
 ]);
 
 // Update booking status
 $new_status = ($ptype === 'deposit') ? 'deposit_paid' : 'confirmed';
-$db->prepare("UPDATE bookings SET status = :s, updated_at = NOW() WHERE ref = :r")
-   ->execute([':s' => $new_status, ':r' => $ref]);
+$db->prepare("UPDATE bookings SET status = $1, updated_at = NOW() WHERE ref = $2")
+   ->execute([$new_status, $ref]);
 
 // Send confirmation emails
 $booking = lnc_get_booking($ref);
