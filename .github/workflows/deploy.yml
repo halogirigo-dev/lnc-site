@@ -16,5 +16,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 65002
           script: |
-            cd ~/public_html
-            git pull origin main
+            cd ~/domains/lomboknatureculture.com/public_html
+            git fetch origin main
+            git reset --hard origin/main
