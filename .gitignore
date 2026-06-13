@@ -49,3 +49,7 @@ lnc_tmp/
 
 # PHP session/cache
 *.session
+
+# Local env / secrets (never commit)
+.env.local
+.env
