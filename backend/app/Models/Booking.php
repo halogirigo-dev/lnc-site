@@ -16,9 +16,13 @@ class Booking extends Model
         'ref', 'customer_id', 'assigned_guide_id', 'status',
         'package_id', 'package_title', 'package_duration', 'package_price_per_pax',
         'total_amount', 'deposit_amount', 'balance_amount',
-        'guests', 'dates', 'flexibility', 'accommodation',
-        'name', 'email', 'phone', 'country', 'nationality', 'age_range',
-        'source', 'message', 'special', 'budget',
+        'guests', 'group_type', 'trip_purpose',
+        'dates', 'arrival_date', 'departure_date',
+        'flexibility', 'accommodation', 'accommodation_name', 'pickup_location',
+        'arrival_flight', 'arrival_time', 'departure_flight', 'departure_time',
+        'name', 'email', 'phone', 'country', 'nationality', 'age_range', 'source',
+        'message', 'special', 'dietary_requirements', 'transport_requirements', 'budget',
+        'emergency_contact_name', 'emergency_contact_phone',
         'admin_notes', 'cancellation_reason',
         'contacted_at', 'quoted_at', 'confirmed_at', 'cancelled_at', 'completed_at',
     ];
@@ -29,6 +33,8 @@ class Booking extends Model
         'deposit_amount'        => 'integer',
         'balance_amount'        => 'integer',
         'guests'                => 'integer',
+        'arrival_date'          => 'date',
+        'departure_date'        => 'date',
         'contacted_at'          => 'datetime',
         'quoted_at'             => 'datetime',
         'confirmed_at'          => 'datetime',
@@ -36,7 +42,7 @@ class Booking extends Model
         'completed_at'          => 'datetime',
     ];
 
-    // ── Status lifecycle ───────────────────────────────────────────
+    // ── Status constants ───────────────────────────────────────────
     const STATUS_NEW       = 'new';
     const STATUS_CONTACTED = 'contacted';
     const STATUS_QUOTED    = 'quoted';
@@ -68,13 +74,39 @@ class Booking extends Model
         ];
     }
 
-    // Valid transitions from each status
+    public static function groupTypes(): array
+    {
+        return [
+            'solo'      => 'Solo Traveller',
+            'couple'    => 'Couple',
+            'family'    => 'Family',
+            'friends'   => 'Friends Group',
+            'corporate' => 'Corporate',
+            'other'     => 'Other',
+        ];
+    }
+
+    public static function tripPurposes(): array
+    {
+        return [
+            'leisure'     => 'Leisure',
+            'honeymoon'   => 'Honeymoon',
+            'anniversary' => 'Anniversary',
+            'birthday'    => 'Birthday',
+            'corporate'   => 'Corporate Retreat',
+            'bucket_list' => 'Bucket List',
+            'other'       => 'Other',
+        ];
+    }
+
+    // ── State machine ──────────────────────────────────────────────
     public static function allowedTransitions(): array
     {
         return [
             self::STATUS_NEW       => [self::STATUS_CONTACTED, self::STATUS_CANCELLED],
             self::STATUS_CONTACTED => [self::STATUS_QUOTED, self::STATUS_CANCELLED],
-            self::STATUS_QUOTED    => [self::STATUS_CONFIRMED, self::STATUS_CANCELLED],
+            // re-quote path: quoted → contacted (for negotiation rounds)
+            self::STATUS_QUOTED    => [self::STATUS_CONFIRMED, self::STATUS_CONTACTED, self::STATUS_CANCELLED],
             self::STATUS_CONFIRMED => [self::STATUS_COMPLETED, self::STATUS_CANCELLED],
             self::STATUS_CANCELLED => [],
             self::STATUS_COMPLETED => [],
@@ -89,6 +121,20 @@ class Booking extends Model
     // ── Core lifecycle method ──────────────────────────────────────
     public function transitionTo(string $newStatus, ?string $changedBy = null, ?string $notes = null): void
     {
+        // Enforce state machine
+        if (!$this->canTransitionTo($newStatus)) {
+            throw new \InvalidArgumentException(
+                "Cannot transition booking {$this->ref} from '{$this->status}' to '{$newStatus}'."
+            );
+        }
+
+        // Guide required before confirmation
+        if ($newStatus === self::STATUS_CONFIRMED && !$this->assigned_guide_id) {
+            throw new \RuntimeException(
+                "A guide must be assigned to booking {$this->ref} before it can be confirmed."
+            );
+        }
+
         $changedBy ??= Auth::user()?->email ?? 'system';
         $oldStatus   = $this->status;
 
@@ -105,7 +151,47 @@ class Booking extends Model
 
         $this->save();
 
-        BookingStatusLog::record($this->ref, $oldStatus, $newStatus, $changedBy, $notes);
+        BookingStatusLog::record(
+            bookingRef:   $this->ref,
+            fromStatus:   $oldStatus,
+            toStatus:     $newStatus,
+            changedBy:    $changedBy,
+            notes:        $notes,
+            changedById:  Auth::id(),
+            ipAddress:    request()->ip(),
+        );
+    }
+
+    // ── Operational helpers ────────────────────────────────────────
+    public function isActiveTour(): bool
+    {
+        return $this->status === self::STATUS_CONFIRMED
+            && $this->arrival_date !== null
+            && $this->arrival_date->isPast()
+            && ($this->departure_date === null || $this->departure_date->isFuture());
+    }
+
+    public function requiresEmergencyContact(): bool
+    {
+        $trekPackages = ['LNC-R3D', 'LNC-R4D', 'LNC-R5D', 'LNC-ADV'];
+        return in_array($this->package_id, $trekPackages);
+    }
+
+    public function hasEmergencyContact(): bool
+    {
+        return !empty($this->emergency_contact_name) && !empty($this->emergency_contact_phone);
+    }
+
+    public function daysUntilArrival(): ?int
+    {
+        if (!$this->arrival_date) return null;
+        return (int) now()->startOfDay()->diffInDays($this->arrival_date->startOfDay(), false);
+    }
+
+    public function nightsCount(): ?int
+    {
+        if (!$this->arrival_date || !$this->departure_date) return null;
+        return (int) $this->arrival_date->diffInDays($this->departure_date);
     }
 
     // ── Relationships ──────────────────────────────────────────────
@@ -131,32 +217,36 @@ class Booking extends Model
                     ->orderBy('created_at', 'asc');
     }
 
+    public function fieldLogs(): HasMany
+    {
+        return $this->hasMany(BookingFieldLog::class, 'booking_ref', 'ref')
+                    ->orderBy('created_at', 'desc');
+    }
+
     // ── Scopes ────────────────────────────────────────────────────
-    public function scopeNew($query)      { return $query->where('status', self::STATUS_NEW); }
-    public function scopeContacted($q)   { return $q->where('status', self::STATUS_CONTACTED); }
-    public function scopeQuoted($q)      { return $q->where('status', self::STATUS_QUOTED); }
-    public function scopeConfirmed($q)   { return $q->where('status', self::STATUS_CONFIRMED); }
     public function scopeActive($q)
     {
         return $q->whereNotIn('status', [self::STATUS_CANCELLED, self::STATUS_COMPLETED]);
     }
 
-    // ── Helpers ───────────────────────────────────────────────────
-    public function getStatusLabelAttribute(): string
+    public function scopeArrivingToday($q)
     {
-        return static::statuses()[$this->status] ?? ucfirst($this->status);
+        return $q->whereDate('arrival_date', today())->where('status', self::STATUS_CONFIRMED);
     }
 
-    public function getStatusColorAttribute(): string
+    public function scopeArrivingTomorrow($q)
     {
-        return static::statusColors()[$this->status] ?? 'gray';
+        return $q->whereDate('arrival_date', today()->addDay())->where('status', self::STATUS_CONFIRMED);
     }
 
-    public function hasPrice(): bool
+    public function scopeActiveTours($q)
     {
-        return $this->total_amount > 0;
+        return $q->where('status', self::STATUS_CONFIRMED)
+                 ->whereDate('arrival_date', '<=', today())
+                 ->where(fn ($q) => $q->whereNull('departure_date')->orWhereDate('departure_date', '>=', today()));
     }
 
+    // ── Formatters ────────────────────────────────────────────────
     public function getFormattedTotalAttribute(): string
     {
         return $this->total_amount ? 'Rp ' . number_format($this->total_amount, 0, ',', '.') : '—';
@@ -167,6 +257,12 @@ class Booking extends Model
         return $this->deposit_amount ? 'Rp ' . number_format($this->deposit_amount, 0, ',', '.') : '—';
     }
 
+    public function hasPrice(): bool
+    {
+        return $this->total_amount > 0;
+    }
+
+    // ── Ref generation ────────────────────────────────────────────
     public static function generateRef(): string
     {
         $year   = now()->year;

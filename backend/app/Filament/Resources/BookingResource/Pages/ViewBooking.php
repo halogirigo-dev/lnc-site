@@ -69,6 +69,29 @@ class ViewBooking extends ViewRecord
                     $this->refreshRecord();
                 }),
 
+            // Re-quote (quoted → contacted, for renegotiation)
+            Actions\Action::make('re_quote')
+                ->label('Re-negotiate')
+                ->icon('heroicon-o-arrow-uturn-left')
+                ->color('warning')
+                ->visible(fn () => $this->record->status === Booking::STATUS_QUOTED)
+                ->form([
+                    Forms\Components\Textarea::make('notes')
+                        ->label('Re-negotiation Notes')
+                        ->placeholder('e.g. Guest requested itinerary change — reverting to contacted for revised quote')
+                        ->required()
+                        ->rows(3),
+                ])
+                ->action(function (array $data) {
+                    $this->record->transitionTo(
+                        Booking::STATUS_CONTACTED,
+                        Auth::user()?->email ?? 'admin',
+                        $data['notes']
+                    );
+                    Notification::make()->title('Reverted to Contacted — re-quote in progress')->warning()->send();
+                    $this->refreshRecord();
+                }),
+
             // Confirm booking (quoted → confirmed)
             Actions\Action::make('confirm_booking')
                 ->label('Confirm Booking')
@@ -76,16 +99,28 @@ class ViewBooking extends ViewRecord
                 ->color('success')
                 ->visible(fn () => $this->record->status === Booking::STATUS_QUOTED)
                 ->form([
+                    Forms\Components\Select::make('assigned_guide_id')
+                        ->label('Assign Guide (required)')
+                        ->options(\App\Models\User::query()->orderBy('name')->pluck('name', 'id'))
+                        ->default(fn () => $this->record->assigned_guide_id)
+                        ->searchable()
+                        ->required()
+                        ->helperText('A guide must be assigned before a booking can be confirmed.'),
                     Forms\Components\Textarea::make('notes')
                         ->label('Confirmation Notes')
                         ->placeholder('e.g. Guest accepted quote via WhatsApp on 14 Jun 2026')
+                        ->required()
                         ->rows(3),
                 ])
                 ->action(function (array $data) {
+                    if (!$this->record->assigned_guide_id || $this->record->assigned_guide_id !== (int) $data['assigned_guide_id']) {
+                        $this->record->assigned_guide_id = (int) $data['assigned_guide_id'];
+                        $this->record->saveQuietly();
+                    }
                     $this->record->transitionTo(
                         Booking::STATUS_CONFIRMED,
                         Auth::user()?->email ?? 'admin',
-                        $data['notes'] ?? null
+                        $data['notes']
                     );
                     Notification::make()->title('Booking Confirmed')->success()->send();
                     $this->refreshRecord();

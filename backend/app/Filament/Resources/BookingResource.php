@@ -15,26 +15,25 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class BookingResource extends Resource
 {
     protected static ?string $model = Booking::class;
-    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+    protected static ?string $navigationIcon  = 'heroicon-o-calendar-days';
     protected static ?string $navigationLabel = 'Bookings';
-    protected static ?int $navigationSort = 1;
+    protected static ?int    $navigationSort  = 1;
     protected static ?string $navigationGroup = 'Operations';
 
-    // ── FORM (Edit page) ──────────────────────────────────────────
+    // ── FORM ──────────────────────────────────────────────────────
     public static function form(Form $form): Form
     {
         return $form->schema([
             Forms\Components\Section::make('Booking Reference')
                 ->schema([
-                    Forms\Components\TextInput::make('ref')
-                        ->disabled()->dehydrated(false)->columnSpan(1),
-                    Forms\Components\TextInput::make('status')
-                        ->disabled()->dehydrated(false)->columnSpan(1),
+                    Forms\Components\TextInput::make('ref')->disabled()->dehydrated(false),
+                    Forms\Components\TextInput::make('status')->disabled()->dehydrated(false),
                 ])->columns(2),
 
             Forms\Components\Section::make('Operations')
@@ -42,41 +41,74 @@ class BookingResource extends Resource
                 ->schema([
                     Forms\Components\Select::make('assigned_guide_id')
                         ->label('Assigned Guide')
-                        ->options(fn () => TeamMember::where('is_active', true)
-                            ->orderBy('name')
-                            ->pluck('name', 'id'))
-                        ->searchable()
-                        ->nullable(),
+                        ->options(fn () => TeamMember::where('is_active', true)->orderBy('name')->pluck('name', 'id'))
+                        ->searchable()->nullable(),
+                    Forms\Components\Select::make('group_type')
+                        ->options(Booking::groupTypes())
+                        ->label('Group Type'),
+                    Forms\Components\Select::make('trip_purpose')
+                        ->options(Booking::tripPurposes())
+                        ->label('Trip Purpose'),
                     Forms\Components\Textarea::make('admin_notes')
-                        ->label('Internal Notes')
-                        ->rows(4)
+                        ->label('Internal Notes')->rows(3)->columnSpanFull()
                         ->placeholder('Internal notes only — not visible to guest.'),
-                ])->columns(1),
+                ])->columns(3),
+
+            Forms\Components\Section::make('Journey Dates')
+                ->description('Structured dates — required for operations dashboard')
+                ->schema([
+                    Forms\Components\TextInput::make('dates')
+                        ->label('Guest-Stated Dates')->placeholder('e.g. Aug 10–20, 2026'),
+                    Forms\Components\DatePicker::make('arrival_date')
+                        ->label('Arrival Date (confirmed)')->native(false),
+                    Forms\Components\DatePicker::make('departure_date')
+                        ->label('Departure Date (confirmed)')->native(false),
+                    Forms\Components\TextInput::make('arrival_flight')
+                        ->label('Arrival Flight')->placeholder('e.g. GA 400'),
+                    Forms\Components\TextInput::make('arrival_time')
+                        ->label('Arrival Time')->placeholder('e.g. 14:30 WITA'),
+                    Forms\Components\TextInput::make('departure_flight')
+                        ->label('Departure Flight')->placeholder('e.g. GA 401'),
+                    Forms\Components\TextInput::make('departure_time')
+                        ->label('Departure Time')->placeholder('e.g. 09:15 WITA'),
+                ])->columns(3),
+
+            Forms\Components\Section::make('Accommodation & Logistics')
+                ->schema([
+                    Forms\Components\TextInput::make('accommodation')
+                        ->label('Tier Preference'),
+                    Forms\Components\TextInput::make('accommodation_name')
+                        ->label('Specific Property')->placeholder('e.g. Qunci Villas, Senggigi'),
+                    Forms\Components\Textarea::make('pickup_location')
+                        ->label('Pickup Location')->rows(2)->placeholder('e.g. LOP Airport / Qunci Villas, Senggigi'),
+                    Forms\Components\Textarea::make('transport_requirements')
+                        ->label('Transport Requirements')->rows(2)
+                        ->placeholder('e.g. Wheelchair-accessible vehicle, private car throughout'),
+                ])->columns(2),
 
             Forms\Components\Section::make('Pricing')
-                ->description('Admin can adjust quote pricing')
                 ->schema([
-                    Forms\Components\TextInput::make('total_amount')
-                        ->label('Total (IDR)')
-                        ->numeric()->prefix('Rp'),
-                    Forms\Components\TextInput::make('deposit_amount')
-                        ->label('Deposit 30% (IDR)')
-                        ->numeric()->prefix('Rp'),
-                    Forms\Components\TextInput::make('balance_amount')
-                        ->label('Balance 70% (IDR)')
-                        ->numeric()->prefix('Rp'),
+                    Forms\Components\TextInput::make('total_amount')->label('Total (IDR)')->numeric()->prefix('Rp'),
+                    Forms\Components\TextInput::make('deposit_amount')->label('Deposit 30% (IDR)')->numeric()->prefix('Rp'),
+                    Forms\Components\TextInput::make('balance_amount')->label('Balance 70% (IDR)')->numeric()->prefix('Rp'),
                 ])->columns(3),
 
-            Forms\Components\Section::make('Journey Details')
-                ->description('Refine travel details')
+            Forms\Components\Section::make('Emergency Contact')
+                ->description('Required for trekking packages before departure')
                 ->schema([
-                    Forms\Components\TextInput::make('package_id')->label('Package Code'),
-                    Forms\Components\TextInput::make('package_title')->label('Package Title'),
-                    Forms\Components\TextInput::make('package_duration')->label('Duration'),
-                    Forms\Components\TextInput::make('guests')->numeric()->label('Guests'),
-                    Forms\Components\TextInput::make('dates')->label('Travel Dates'),
-                    Forms\Components\TextInput::make('accommodation')->label('Accommodation'),
-                ])->columns(3),
+                    Forms\Components\TextInput::make('emergency_contact_name')
+                        ->label('Emergency Contact Name'),
+                    Forms\Components\TextInput::make('emergency_contact_phone')
+                        ->label('Emergency Contact Phone')->tel(),
+                ])->columns(2),
+
+            Forms\Components\Section::make('Guest Requirements')
+                ->schema([
+                    Forms\Components\Textarea::make('dietary_requirements')
+                        ->label('Dietary Requirements')->rows(3)
+                        ->placeholder('e.g. Strict vegan. Peanut allergy — SEVERE. Halal only.')
+                        ->columnSpanFull(),
+                ]),
 
             Forms\Components\Section::make('Guest Info')
                 ->description('Guest-submitted — edit with care')
@@ -92,182 +124,208 @@ class BookingResource extends Resource
             Forms\Components\Section::make('Guest Vision')
                 ->schema([
                     Forms\Components\Textarea::make('message')->rows(4)->label('Journey Request'),
-                    Forms\Components\Textarea::make('special')->rows(3)->label('Special Requirements'),
+                    Forms\Components\Textarea::make('special')->rows(3)->label('Special Requests'),
                     Forms\Components\TextInput::make('budget'),
                 ])->collapsed(),
         ]);
     }
 
-    // ── TABLE (List page) ─────────────────────────────────────────
+    // ── TABLE ─────────────────────────────────────────────────────
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('ref')
-                    ->searchable()->copyable()->fontFamily('mono')
-                    ->weight('bold'),
+                    ->searchable()->copyable()->fontFamily('mono')->weight('bold'),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Guest')
-                    ->searchable()->sortable()
+                    ->label('Guest')->searchable()->sortable()
                     ->description(fn (Booking $r) => $r->email),
                 Tables\Columns\TextColumn::make('package_id')
-                    ->label('Package')
-                    ->badge()->color('info'),
+                    ->label('Package')->badge()->color('info')
+                    ->description(fn (Booking $r) => $r->package_title ? mb_strimwidth($r->package_title, 0, 28, '…') : null),
+                Tables\Columns\TextColumn::make('group_type')
+                    ->label('Group')
+                    ->formatStateUsing(fn ($s) => Booking::groupTypes()[$s] ?? ucfirst($s ?? ''))
+                    ->badge()->color('gray')
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('guests')
                     ->alignCenter()->sortable(),
-                Tables\Columns\TextColumn::make('dates')
-                    ->label('Travel Dates')
-                    ->limit(22)->placeholder('—'),
+                Tables\Columns\TextColumn::make('arrival_date')
+                    ->label('Arrival')->date('d M Y')->sortable()
+                    ->placeholder('TBC')
+                    ->color(fn (Booking $r) => match(true) {
+                        $r->arrival_date === null                      => null,
+                        $r->arrival_date->isToday()                   => 'success',
+                        $r->arrival_date->isTomorrow()                => 'warning',
+                        $r->arrival_date->isPast()                    => 'gray',
+                        $r->arrival_date->diffInDays(now()) <= 7      => 'warning',
+                        default                                       => null,
+                    }),
+                Tables\Columns\TextColumn::make('departure_date')
+                    ->label('Departure')->date('d M Y')->sortable()
+                    ->placeholder('TBC')->toggleable(),
+                Tables\Columns\TextColumn::make('assignedGuide.name')
+                    ->label('Guide')
+                    ->placeholder('—')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'danger')
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label('Total')
-                    ->formatStateUsing(fn ($state) => $state
-                        ? 'Rp ' . number_format($state, 0, ',', '.')
-                        : '—')
+                    ->formatStateUsing(fn ($s) => $s ? 'Rp ' . number_format($s, 0, ',', '.') : '—')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => Booking::statusColors()[$state] ?? 'gray')
                     ->formatStateUsing(fn (string $state): string => Booking::statuses()[$state] ?? ucfirst($state)),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Received')
-                    ->dateTime('d M Y')->sortable(),
+                    ->label('Received')->dateTime('d M Y')->sortable()
+                    ->color(fn (Booking $r) => match(true) {
+                        $r->status !== Booking::STATUS_NEW => null,
+                        now()->diffInHours($r->created_at) < 24 => 'success',
+                        now()->diffInHours($r->created_at) < 48 => 'warning',
+                        default => 'danger',
+                    }),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->options(Booking::statuses())
-                    ->label('Status'),
+                    ->options(Booking::statuses())->label('Status'),
+
+                Tables\Filters\SelectFilter::make('assigned_guide_id')
+                    ->label('Guide')
+                    ->options(fn () => TeamMember::where('is_active', true)->orderBy('name')->pluck('name', 'id')),
+
+                Tables\Filters\SelectFilter::make('group_type')
+                    ->options(Booking::groupTypes())->label('Group Type'),
+
+                Tables\Filters\SelectFilter::make('country')
+                    ->label('Country')
+                    ->options(fn () => Booking::whereNotNull('country')->distinct()
+                        ->orderBy('country')->pluck('country', 'country')->toArray()),
+
+                Tables\Filters\SelectFilter::make('package_id')
+                    ->label('Package')
+                    ->options(fn () => Booking::whereNotNull('package_id')->distinct()
+                        ->orderBy('package_id')->pluck('package_id', 'package_id')->toArray()),
+
+                Tables\Filters\Filter::make('arriving_today')
+                    ->label('Arriving Today')
+                    ->query(fn (Builder $q) => $q->whereDate('arrival_date', today())
+                        ->where('status', Booking::STATUS_CONFIRMED)),
+
+                Tables\Filters\Filter::make('arriving_this_week')
+                    ->label('Arriving This Week')
+                    ->query(fn (Builder $q) => $q->whereBetween('arrival_date', [today(), today()->addDays(7)])
+                        ->where('status', Booking::STATUS_CONFIRMED)),
+
+                Tables\Filters\Filter::make('active_tours')
+                    ->label('Currently On Tour')
+                    ->query(fn (Builder $q) => $q->activeTours()),
+
+                Tables\Filters\Filter::make('received_this_week')
+                    ->label('Received This Week')
+                    ->query(fn (Builder $q) => $q->where('created_at', '>=', now()->startOfWeek())),
+
                 Tables\Filters\Filter::make('has_price')
                     ->label('Has Pricing')
-                    ->query(fn (Builder $query) => $query->where('total_amount', '>', 0)),
+                    ->query(fn (Builder $q) => $q->where('total_amount', '>', 0)),
+
                 Tables\Filters\Filter::make('unassigned')
                     ->label('No Guide Assigned')
-                    ->query(fn (Builder $query) => $query->whereNull('assigned_guide_id')),
+                    ->query(fn (Builder $q) => $q->whereNull('assigned_guide_id')),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->label(''),
 
-                // Contact action (new → contacted)
                 Tables\Actions\Action::make('contact')
-                    ->label('Contact')
-                    ->icon('heroicon-o-phone')
-                    ->color('info')
+                    ->label('Contact')->icon('heroicon-o-phone')->color('info')
                     ->visible(fn (Booking $r) => $r->status === Booking::STATUS_NEW)
-                    ->requiresConfirmation()
-                    ->modalHeading('Mark as Contacted')
-                    ->modalDescription('Record that you\'ve reached out to this guest.')
                     ->form([
                         Forms\Components\Textarea::make('notes')
-                            ->label('Notes (optional)')
-                            ->placeholder('e.g. Sent WhatsApp introduction')
-                            ->rows(3),
+                            ->label('Contact Notes')->rows(3)
+                            ->placeholder('e.g. Sent WhatsApp introduction'),
                     ])
                     ->action(function (Booking $record, array $data) {
-                        $record->transitionTo(
-                            Booking::STATUS_CONTACTED,
-                            Auth::user()?->email ?? 'admin',
-                            $data['notes'] ?? null
-                        );
+                        $record->transitionTo(Booking::STATUS_CONTACTED, Auth::user()?->email ?? 'admin', $data['notes'] ?? null);
                         Notification::make()->title('Marked as Contacted')->success()->send();
                     }),
 
-                // Quote action (contacted → quoted)
                 Tables\Actions\Action::make('send_quote')
-                    ->label('Send Quote')
-                    ->icon('heroicon-o-document-text')
-                    ->color('primary')
+                    ->label('Send Quote')->icon('heroicon-o-document-text')->color('primary')
                     ->visible(fn (Booking $r) => $r->status === Booking::STATUS_CONTACTED)
                     ->form([
                         Forms\Components\TextInput::make('total_amount')
-                            ->label('Quoted Total (IDR)')
-                            ->numeric()->prefix('Rp')
-                            ->default(fn (Booking $r) => $r->total_amount ?: null)
-                            ->required(),
+                            ->label('Quoted Total (IDR)')->numeric()->prefix('Rp')
+                            ->default(fn (Booking $r) => $r->total_amount ?: null)->required(),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Quote Notes')
-                            ->placeholder('e.g. Sent proposal via email, awaiting response')
-                            ->rows(3),
+                            ->label('Quote Notes')->rows(3)
+                            ->placeholder('e.g. Sent full proposal PDF via email'),
                     ])
                     ->action(function (Booking $record, array $data) {
-                        $total = (int) $data['total_amount'];
-                        Invoice::createQuote($record, $total);
-                        $record->transitionTo(
-                            Booking::STATUS_QUOTED,
-                            Auth::user()?->email ?? 'admin',
-                            $data['notes'] ?? null
-                        );
-                        Notification::make()->title('Quote created and status updated')->success()->send();
+                        Invoice::createQuote($record, (int) $data['total_amount']);
+                        $record->transitionTo(Booking::STATUS_QUOTED, Auth::user()?->email ?? 'admin', $data['notes'] ?? null);
+                        Notification::make()->title('Quote created — status updated to Quoted')->success()->send();
                     }),
 
-                // Confirm action (quoted → confirmed)
                 Tables\Actions\Action::make('confirm')
-                    ->label('Confirm')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
+                    ->label('Confirm')->icon('heroicon-o-check-circle')->color('success')
                     ->visible(fn (Booking $r) => $r->status === Booking::STATUS_QUOTED)
-                    ->requiresConfirmation()
-                    ->modalHeading('Confirm Booking')
-                    ->modalDescription('Guest has agreed to proceed. Mark booking as confirmed.')
                     ->form([
+                        Forms\Components\Select::make('assigned_guide_id')
+                            ->label('Assign Guide')
+                            ->options(fn () => TeamMember::where('is_active', true)->orderBy('name')->pluck('name', 'id'))
+                            ->default(fn (Booking $r) => $r->assigned_guide_id)
+                            ->required()
+                            ->helperText('A guide must be assigned before confirming.'),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Confirmation Notes')
-                            ->placeholder('e.g. Guest accepted quote via email on 14 Jun')
-                            ->rows(3),
+                            ->label('Confirmation Notes')->required()->rows(3)
+                            ->placeholder('e.g. Guest accepted quote via WhatsApp on 14 Jun 2026'),
                     ])
                     ->action(function (Booking $record, array $data) {
-                        $record->transitionTo(
-                            Booking::STATUS_CONFIRMED,
-                            Auth::user()?->email ?? 'admin',
-                            $data['notes'] ?? null
-                        );
+                        if ($data['assigned_guide_id'] !== $record->assigned_guide_id) {
+                            $record->assigned_guide_id = $data['assigned_guide_id'];
+                        }
+                        $record->transitionTo(Booking::STATUS_CONFIRMED, Auth::user()?->email ?? 'admin', $data['notes']);
                         Notification::make()->title('Booking Confirmed')->success()->send();
                     }),
 
-                // Complete action (confirmed → completed)
-                Tables\Actions\Action::make('complete')
-                    ->label('Complete')
-                    ->icon('heroicon-o-flag')
-                    ->color('gray')
-                    ->visible(fn (Booking $r) => $r->status === Booking::STATUS_CONFIRMED)
-                    ->requiresConfirmation()
-                    ->modalHeading('Mark Journey Complete')
+                Tables\Actions\Action::make('re_quote')
+                    ->label('Revise Quote')->icon('heroicon-o-arrow-uturn-left')->color('warning')
+                    ->visible(fn (Booking $r) => $r->status === Booking::STATUS_QUOTED)
                     ->form([
                         Forms\Components\Textarea::make('notes')
-                            ->label('Completion Notes')
-                            ->placeholder('e.g. Journey completed on 20 Aug. Guest departed from LOP.')
-                            ->rows(3),
+                            ->label('Reason for Revision')->required()->rows(3)
+                            ->placeholder('e.g. Guest requested fewer guests. Preparing revised pricing.'),
                     ])
                     ->action(function (Booking $record, array $data) {
-                        $record->transitionTo(
-                            Booking::STATUS_COMPLETED,
-                            Auth::user()?->email ?? 'admin',
-                            $data['notes'] ?? null
-                        );
+                        $record->transitionTo(Booking::STATUS_CONTACTED, Auth::user()?->email ?? 'admin', $data['notes']);
+                        Notification::make()->title('Returned to Contacted — prepare revised quote')->warning()->send();
+                    }),
+
+                Tables\Actions\Action::make('complete')
+                    ->label('Complete')->icon('heroicon-o-flag')->color('gray')
+                    ->visible(fn (Booking $r) => $r->status === Booking::STATUS_CONFIRMED)
+                    ->form([
+                        Forms\Components\Textarea::make('notes')
+                            ->label('Completion Notes')->rows(3)
+                            ->placeholder('e.g. Journey completed on 20 Aug. Guest departed from LOP.'),
+                    ])
+                    ->action(function (Booking $record, array $data) {
+                        $record->transitionTo(Booking::STATUS_COMPLETED, Auth::user()?->email ?? 'admin', $data['notes'] ?? null);
                         Notification::make()->title('Journey Marked Complete')->success()->send();
                     }),
 
-                // Cancel action (any active status → cancelled)
                 Tables\Actions\Action::make('cancel')
-                    ->label('Cancel')
-                    ->icon('heroicon-o-x-circle')
-                    ->color('danger')
-                    ->visible(fn (Booking $r) => !in_array($r->status, [
-                        Booking::STATUS_CANCELLED, Booking::STATUS_COMPLETED,
-                    ]))
+                    ->label('Cancel')->icon('heroicon-o-x-circle')->color('danger')
+                    ->visible(fn (Booking $r) => !in_array($r->status, [Booking::STATUS_CANCELLED, Booking::STATUS_COMPLETED]))
                     ->form([
                         Forms\Components\Textarea::make('cancellation_reason')
-                            ->label('Cancellation Reason')
-                            ->required()
-                            ->rows(3),
+                            ->label('Cancellation Reason')->required()->rows(3),
                     ])
                     ->action(function (Booking $record, array $data) {
                         $record->cancellation_reason = $data['cancellation_reason'];
-                        $record->save();
-                        $record->transitionTo(
-                            Booking::STATUS_CANCELLED,
-                            Auth::user()?->email ?? 'admin',
-                            $data['cancellation_reason']
-                        );
+                        $record->transitionTo(Booking::STATUS_CANCELLED, Auth::user()?->email ?? 'admin', $data['cancellation_reason']);
                         Notification::make()->title('Booking Cancelled')->warning()->send();
                     }),
 
@@ -275,65 +333,143 @@ class BookingResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('mark_contacted')
+                        ->label('Mark as Contacted')
+                        ->icon('heroicon-o-phone')
+                        ->color('info')
+                        ->form([
+                            Forms\Components\Textarea::make('notes')
+                                ->label('Bulk Contact Notes')->rows(2)
+                                ->placeholder('e.g. Sent WhatsApp introduction to all new bookings'),
+                        ])
+                        ->action(function (Collection $records, array $data) {
+                            $count = 0;
+                            foreach ($records as $record) {
+                                if ($record->status === Booking::STATUS_NEW) {
+                                    $record->transitionTo(Booking::STATUS_CONTACTED, Auth::user()?->email ?? 'admin', $data['notes'] ?? 'Bulk contact action');
+                                    $count++;
+                                }
+                            }
+                            Notification::make()->title("{$count} booking(s) marked as Contacted")->success()->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+
+                    Tables\Actions\BulkAction::make('export_csv')
+                        ->label('Export CSV')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->action(function (Collection $records) {
+                            $filename = 'lnc-bookings-' . now()->format('Y-m-d-His') . '.csv';
+                            return response()->streamDownload(function () use ($records) {
+                                $handle = fopen('php://output', 'w');
+                                fputcsv($handle, [
+                                    'Ref', 'Status', 'Guest Name', 'Email', 'Phone',
+                                    'Country', 'Package', 'Group Type', 'Guests',
+                                    'Arrival Date', 'Departure Date',
+                                    'Arrival Flight', 'Arrival Time',
+                                    'Accommodation', 'Pickup Location',
+                                    'Dietary Requirements', 'Emergency Contact', 'Emergency Phone',
+                                    'Total IDR', 'Guide', 'Received At',
+                                ]);
+                                foreach ($records as $b) {
+                                    fputcsv($handle, [
+                                        $b->ref,
+                                        $b->status,
+                                        $b->name,
+                                        $b->email,
+                                        $b->phone,
+                                        $b->country,
+                                        $b->package_id,
+                                        $b->group_type,
+                                        $b->guests,
+                                        $b->arrival_date?->format('Y-m-d'),
+                                        $b->departure_date?->format('Y-m-d'),
+                                        $b->arrival_flight,
+                                        $b->arrival_time,
+                                        $b->accommodation_name ?? $b->accommodation,
+                                        $b->pickup_location,
+                                        $b->dietary_requirements,
+                                        $b->emergency_contact_name,
+                                        $b->emergency_contact_phone,
+                                        $b->total_amount,
+                                        $b->assignedGuide?->name,
+                                        $b->created_at?->format('Y-m-d H:i'),
+                                    ]);
+                                }
+                                fclose($handle);
+                            }, $filename, ['Content-Type' => 'text/csv']);
+                        })
+                        ->deselectRecordsAfterCompletion(),
+
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
 
-    // ── INFOLIST (View page) ───────────────────────────────────────
+    // ── INFOLIST ──────────────────────────────────────────────────
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist->schema([
-            // Header: status + key details
             Infolists\Components\Section::make('Booking Overview')
                 ->schema([
                     Infolists\Components\TextEntry::make('ref')
                         ->label('Reference')->copyable()->weight('bold')->fontFamily('mono'),
                     Infolists\Components\TextEntry::make('status')
-                        ->label('Status')
                         ->badge()
                         ->color(fn (string $state): string => Booking::statusColors()[$state] ?? 'gray')
                         ->formatStateUsing(fn (string $state): string => Booking::statuses()[$state] ?? ucfirst($state)),
-                    Infolists\Components\TextEntry::make('created_at')
-                        ->label('Received')->dateTime('d M Y H:i'),
-                    Infolists\Components\TextEntry::make('assignedGuide.name')
-                        ->label('Guide')->default('Not assigned'),
+                    Infolists\Components\TextEntry::make('created_at')->label('Received')->dateTime('d M Y H:i'),
+                    Infolists\Components\TextEntry::make('assignedGuide.name')->label('Guide')->default('⚠ Not assigned')
+                        ->color(fn (Booking $r) => $r->assigned_guide_id ? null : 'danger'),
                 ])->columns(4),
 
-            // Two-column layout: journey left, guest right
             Infolists\Components\Grid::make(2)->schema([
                 Infolists\Components\Section::make('Journey')
                     ->schema([
-                        Infolists\Components\TextEntry::make('package_id')
-                            ->label('Package')->badge()->color('info'),
-                        Infolists\Components\TextEntry::make('package_title')
-                            ->label('Title'),
-                        Infolists\Components\TextEntry::make('package_duration')
-                            ->label('Duration'),
-                        Infolists\Components\TextEntry::make('guests')
-                            ->label('Guests'),
-                        Infolists\Components\TextEntry::make('dates')
-                            ->label('Travel Dates')->placeholder('Not specified'),
-                        Infolists\Components\TextEntry::make('flexibility')
-                            ->label('Flexibility')->placeholder('—'),
-                        Infolists\Components\TextEntry::make('accommodation')
-                            ->label('Accommodation')->placeholder('—'),
-                    ])->columns(2),
+                        Infolists\Components\TextEntry::make('package_id')->label('Package')->badge()->color('info'),
+                        Infolists\Components\TextEntry::make('package_title')->label('Title'),
+                        Infolists\Components\TextEntry::make('package_duration')->label('Duration'),
+                        Infolists\Components\TextEntry::make('guests')->label('Guests'),
+                        Infolists\Components\TextEntry::make('group_type')->label('Group Type')
+                            ->formatStateUsing(fn ($s) => Booking::groupTypes()[$s] ?? ucfirst($s ?? '—'))
+                            ->placeholder('—'),
+                        Infolists\Components\TextEntry::make('trip_purpose')->label('Purpose')
+                            ->formatStateUsing(fn ($s) => Booking::tripPurposes()[$s] ?? ucfirst($s ?? '—'))
+                            ->placeholder('—'),
+                        Infolists\Components\TextEntry::make('dates')->label('Guest-Stated Dates')->placeholder('—'),
+                        Infolists\Components\TextEntry::make('arrival_date')->label('Arrival (confirmed)')->date('d M Y')->placeholder('TBC'),
+                        Infolists\Components\TextEntry::make('departure_date')->label('Departure (confirmed)')->date('d M Y')->placeholder('TBC'),
+                        Infolists\Components\TextEntry::make('arrival_flight')->label('Arrival Flight')->placeholder('—'),
+                        Infolists\Components\TextEntry::make('arrival_time')->label('Arrival Time')->placeholder('—'),
+                        Infolists\Components\TextEntry::make('departure_flight')->label('Dep. Flight')->placeholder('—'),
+                    ])->columns(3),
 
                 Infolists\Components\Section::make('Guest')
                     ->schema([
                         Infolists\Components\TextEntry::make('name')->label('Name'),
-                        Infolists\Components\TextEntry::make('email')
-                            ->label('Email')->copyable(),
-                        Infolists\Components\TextEntry::make('phone')
-                            ->label('Phone')->copyable()->placeholder('—'),
+                        Infolists\Components\TextEntry::make('email')->label('Email')->copyable(),
+                        Infolists\Components\TextEntry::make('phone')->label('Phone')->copyable()->placeholder('—'),
                         Infolists\Components\TextEntry::make('country')->label('Country')->placeholder('—'),
                         Infolists\Components\TextEntry::make('nationality')->label('Nationality')->placeholder('—'),
                         Infolists\Components\TextEntry::make('source')->label('Source')->placeholder('—'),
+                        Infolists\Components\TextEntry::make('emergency_contact_name')
+                            ->label('Emergency Contact')->placeholder('⚠ Not provided')
+                            ->color(fn (Booking $r) => $r->emergency_contact_name ? null : 'warning'),
+                        Infolists\Components\TextEntry::make('emergency_contact_phone')
+                            ->label('Emergency Phone')->copyable()->placeholder('—'),
                     ])->columns(2),
             ]),
 
-            // Pricing
+            Infolists\Components\Section::make('Logistics')
+                ->schema([
+                    Infolists\Components\TextEntry::make('accommodation')->label('Accommodation Tier')->placeholder('—'),
+                    Infolists\Components\TextEntry::make('accommodation_name')->label('Property Name')->placeholder('—'),
+                    Infolists\Components\TextEntry::make('pickup_location')->label('Pickup Location')->columnSpanFull()->placeholder('—'),
+                    Infolists\Components\TextEntry::make('dietary_requirements')
+                        ->label('Dietary Requirements')->columnSpanFull()->placeholder('None specified')
+                        ->color(fn ($state) => $state ? 'warning' : null),
+                    Infolists\Components\TextEntry::make('transport_requirements')->label('Transport')->columnSpanFull()->placeholder('—'),
+                ])->columns(3),
+
             Infolists\Components\Section::make('Pricing')
                 ->schema([
                     Infolists\Components\TextEntry::make('total_amount')
@@ -347,86 +483,58 @@ class BookingResource extends Resource
                         ->formatStateUsing(fn ($s) => $s ? 'Rp ' . number_format($s, 0, ',', '.') : '—'),
                 ])->columns(3),
 
-            // Guest vision
             Infolists\Components\Section::make('Guest Vision')
                 ->schema([
-                    Infolists\Components\TextEntry::make('message')
-                        ->label('Journey Request')->markdown()->columnSpanFull()->placeholder('—'),
-                    Infolists\Components\TextEntry::make('special')
-                        ->label('Special Requirements')->columnSpanFull()->placeholder('—'),
-                    Infolists\Components\TextEntry::make('budget')
-                        ->label('Budget Range')->placeholder('Not specified'),
+                    Infolists\Components\TextEntry::make('message')->label('Journey Request')->markdown()->columnSpanFull()->placeholder('—'),
+                    Infolists\Components\TextEntry::make('special')->label('Special Requests')->columnSpanFull()->placeholder('—'),
+                    Infolists\Components\TextEntry::make('budget')->label('Budget Range')->placeholder('Not specified'),
                 ])->columns(2)->collapsed(),
 
-            // Admin section
             Infolists\Components\Section::make('Admin Notes')
                 ->schema([
-                    Infolists\Components\TextEntry::make('admin_notes')
-                        ->label('Internal Notes')->columnSpanFull()->placeholder('No notes yet.'),
+                    Infolists\Components\TextEntry::make('admin_notes')->label('Internal Notes')->columnSpanFull()->placeholder('No notes yet.'),
                     Infolists\Components\TextEntry::make('cancellation_reason')
                         ->label('Cancellation Reason')->columnSpanFull()->placeholder('—')
                         ->visible(fn (Booking $r) => $r->status === Booking::STATUS_CANCELLED),
                 ]),
 
-            // Status Timeline
             Infolists\Components\Section::make('Status Timeline')
                 ->schema([
-                    Infolists\Components\RepeatableEntry::make('statusLogs')
-                        ->label('')
+                    Infolists\Components\RepeatableEntry::make('statusLogs')->label('')
                         ->schema([
-                            Infolists\Components\TextEntry::make('from_status')
-                                ->label('From')
+                            Infolists\Components\TextEntry::make('from_status')->label('From')
                                 ->formatStateUsing(fn ($s) => $s ? (Booking::statuses()[$s] ?? ucfirst($s)) : 'Created')
                                 ->badge()->color(fn ($s) => $s ? (Booking::statusColors()[$s] ?? 'gray') : 'gray'),
-                            Infolists\Components\TextEntry::make('to_status')
-                                ->label('To')
+                            Infolists\Components\TextEntry::make('to_status')->label('To')
                                 ->formatStateUsing(fn ($s) => Booking::statuses()[$s] ?? ucfirst($s))
                                 ->badge()->color(fn ($s) => Booking::statusColors()[$s] ?? 'gray'),
-                            Infolists\Components\TextEntry::make('changed_by')
-                                ->label('By'),
-                            Infolists\Components\TextEntry::make('created_at')
-                                ->label('At')->dateTime('d M Y H:i'),
-                            Infolists\Components\TextEntry::make('notes')
-                                ->label('Notes')->columnSpanFull()->placeholder('—'),
+                            Infolists\Components\TextEntry::make('changed_by')->label('By'),
+                            Infolists\Components\TextEntry::make('created_at')->label('At')->dateTime('d M Y H:i'),
+                            Infolists\Components\TextEntry::make('notes')->label('Notes')->columnSpanFull()->placeholder('—'),
                         ])
-                        ->columns(4)
-                        ->columnSpanFull(),
+                        ->columns(4)->columnSpanFull(),
                 ]),
 
-            // Invoices
             Infolists\Components\Section::make('Invoices')
                 ->schema([
-                    Infolists\Components\RepeatableEntry::make('invoices')
-                        ->label('')
+                    Infolists\Components\RepeatableEntry::make('invoices')->label('')
                         ->schema([
-                            Infolists\Components\TextEntry::make('invoice_number')
-                                ->label('Number')->copyable()->fontFamily('mono'),
-                            Infolists\Components\TextEntry::make('type')
-                                ->label('Type')
-                                ->formatStateUsing(fn ($s) => Invoice::types()[$s] ?? ucfirst($s))
-                                ->badge()->color('info'),
-                            Infolists\Components\TextEntry::make('status')
-                                ->label('Status')
-                                ->badge()
-                                ->color(fn ($s) => Invoice::statusColors()[$s] ?? 'gray'),
-                            Infolists\Components\TextEntry::make('total_amount')
-                                ->label('Total')
+                            Infolists\Components\TextEntry::make('invoice_number')->label('Number')->copyable()->fontFamily('mono'),
+                            Infolists\Components\TextEntry::make('type')->label('Type')
+                                ->formatStateUsing(fn ($s) => Invoice::types()[$s] ?? ucfirst($s))->badge()->color('info'),
+                            Infolists\Components\TextEntry::make('status')->label('Status')
+                                ->badge()->color(fn ($s) => Invoice::statusColors()[$s] ?? 'gray'),
+                            Infolists\Components\TextEntry::make('total_amount')->label('Total')
                                 ->formatStateUsing(fn ($s) => 'Rp ' . number_format($s, 0, ',', '.')),
-                            Infolists\Components\TextEntry::make('issued_at')
-                                ->label('Issued')->date('d M Y'),
-                            Infolists\Components\TextEntry::make('valid_until')
-                                ->label('Valid Until')->date('d M Y'),
+                            Infolists\Components\TextEntry::make('issued_at')->label('Issued')->date('d M Y'),
+                            Infolists\Components\TextEntry::make('due_deposit_at')->label('Deposit Due')->date('d M Y'),
                         ])
-                        ->columns(3)
-                        ->columnSpanFull(),
+                        ->columns(3)->columnSpanFull(),
                 ]),
         ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [];
-    }
+    public static function getRelations(): array { return []; }
 
     public static function getPages(): array
     {

@@ -1,24 +1,56 @@
 <?php
+
 namespace App\Filament\Widgets;
+
 use App\Models\Booking;
-use App\Models\Payment;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
-class BookingStatsWidget extends BaseWidget {
-    protected function getStats(): array {
-        $totalRevenue = Payment::where('midtrans_status', 'settlement')
-            ->orWhere('midtrans_status', 'capture')
-            ->sum('amount');
+class BookingStatsWidget extends BaseWidget
+{
+    protected static ?int $sort = 1;
+
+    protected function getStats(): array
+    {
+        $thisMonth  = now()->startOfMonth();
+        $lastMonth  = now()->subMonth()->startOfMonth();
+        $lastMonthEnd = now()->subMonth()->endOfMonth();
+
+        $thisMonthCount = Booking::where('created_at', '>=', $thisMonth)->count();
+        $lastMonthCount = Booking::whereBetween('created_at', [$lastMonth, $lastMonthEnd])->count();
+
+        $pendingAction = Booking::whereIn('status', [
+            Booking::STATUS_NEW,
+            Booking::STATUS_CONTACTED,
+            Booking::STATUS_QUOTED,
+        ])->count();
+
+        $confirmedActive = Booking::where('status', Booking::STATUS_CONFIRMED)->count();
+
+        $totalCompleted = Booking::where('status', Booking::STATUS_COMPLETED)->count();
+        $totalAll       = Booking::whereNotIn('status', [Booking::STATUS_CANCELLED])->count();
+        $conversionRate = $totalAll > 0
+            ? round(($totalCompleted / $totalAll) * 100)
+            : 0;
+
         return [
-            Stat::make('Total Bookings', Booking::count())
-                ->description('All time')->color('primary'),
-            Stat::make('Pending Payment', Booking::where('status', 'pending_payment')->count())
-                ->description('Awaiting deposit')->color('warning'),
-            Stat::make('Confirmed', Booking::whereIn('status', ['deposit_paid','balance_paid','confirmed'])->count())
-                ->description('Active bookings')->color('success'),
-            Stat::make('Revenue Collected', 'Rp ' . number_format($totalRevenue, 0, ',', '.'))
-                ->description('Via Midtrans')->color('success'),
+            Stat::make('Bookings This Month', $thisMonthCount)
+                ->description($lastMonthCount > 0
+                    ? ($thisMonthCount >= $lastMonthCount ? '+' : '') . ($thisMonthCount - $lastMonthCount) . ' vs last month'
+                    : 'No data last month')
+                ->color($thisMonthCount >= $lastMonthCount ? 'success' : 'warning'),
+
+            Stat::make('Pending Action', $pendingAction)
+                ->description('New / Contacted / Quoted')
+                ->color($pendingAction > 5 ? 'danger' : 'warning'),
+
+            Stat::make('Confirmed Active', $confirmedActive)
+                ->description('Bookings in confirmed state')
+                ->color('success'),
+
+            Stat::make('Completion Rate', $conversionRate . '%')
+                ->description('Completed ÷ non-cancelled')
+                ->color($conversionRate >= 70 ? 'success' : 'info'),
         ];
     }
 }
