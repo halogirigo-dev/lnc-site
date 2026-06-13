@@ -13,8 +13,8 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASS }}
-          port: 22
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 65002
           script: |
             cd ~/public_html
             git pull origin main
