@@ -53,3 +53,7 @@ lnc_tmp/
 # Local env / secrets (never commit)
 .env.local
 .env
+
+# Setup / deploy scripts (server-only)
+create-tables.php
+deploy.php
