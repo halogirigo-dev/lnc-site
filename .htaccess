@@ -8,6 +8,13 @@ RewriteEngine On
 # ── Block sensitive directories ───────────────────────────────────────────────
 RewriteRule ^\.private/.*$  - [F,L]
 
+# ── Block deploy webhook from browser (POST only, no GET browsing) ────────────
+<Files "deploy.php">
+  <RequireAny>
+    Require method POST
+  </RequireAny>
+</Files>
+
 # ── Block backup, temp, and dangerous files ───────────────────────────────────
 <FilesMatch "\.(bak|tmp|log|sql|swp|old|orig|dist|save)$">
   Require all denied
