@@ -1,0 +1,51 @@
+# ─── LNC PHP Site — .gitignore ───────────────────────────────
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# WordPress remnants (delete these, but exclude from git too)
+wp-admin/
+wp-includes/
+wp-content/
+wp-activate.php
+wp-blog-header.php
+wp-comments-post.php
+wp-config.php
+wp-config-sample.php
+wp-cron.php
+wp-links-opml.php
+wp-load.php
+wp-login.php
+wp-mail.php
+wp-settings.php
+wp-signup.php
+wp-trackback.php
+readme.html
+license.txt
+.htaccess.bk
+
+# Hostinger WordPress config (not needed for custom PHP site)
+.private/
+
+# One-time scripts (never commit these)
+cleanup.php
+fetch-hotel-images.php
+create_autologin_*.php
+
+# Temp / backup files
+*.bak
+*.tmp
+*.log
+*.sql
+*.swp
+lnc_tmp/
+
+# Editor
+.vscode/
+.idea/
+*.code-workspace
+
+# PHP session/cache
+*.session

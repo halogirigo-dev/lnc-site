@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /wp-admin/
+Disallow: /wp-includes/
+Disallow: /.private/
+Disallow: /lnc_tmp/
+Disallow: /process-booking.php
+Disallow: /invoice.php
+
+User-agent: *
+Disallow: /wp-login.php
+Disallow: /wp-config.php
+Disallow: /xmlrpc.php
+
+Sitemap: https://lomboknatureculture.com/sitemap.xml
