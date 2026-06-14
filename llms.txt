@@ -1,0 +1,51 @@
+# Lombok Nature Culture — AI/LLM Site Index
+
+> PT Lombok Nature Culture — Your Ethical Partner for Authentic Private Journeys.
+> Private tours, Rinjani trekking, cultural experiences and honeymoon escapes in Lombok, Indonesia.
+> Contact: hello@lnc-travel.com | Location: Lombok, West Nusa Tenggara, Indonesia
+
+## Sitemap
+
+- [XML Sitemap](https://lomboknatureculture.com/sitemap.xml)
+
+## Public Pages
+
+- [Home](https://lomboknatureculture.com/) — Hero, featured packages, hotel partners, philosophy, team, testimonials, gallery, inquiry form.
+- [Experiences & Packages](https://lomboknatureculture.com/experiences) — All tour packages: cultural, island, adventure, honeymoon, long stay (7–14 days), Bali packages.
+- [Hotel Partners](https://lomboknatureculture.com/hotels) — Curated partner hotels by zone: Kuta Mandalika, Senggigi & West, Gili Islands, Highlands.
+- [Our Team](https://lomboknatureculture.com/team) — Arief Hidayat (Founder), Dewi Sasak (Cultural Director), Bayu Pratama (Trek Guide), Sari Wulandari (Honeymoon Specialist).
+- [Book a Journey](https://lomboknatureculture.com/booking) — Multi-step booking request form (no payment required at this stage).
+- [Legal & Policies](https://lomboknatureculture.com/legal) — Terms of Service, Privacy Policy, Cancellation Policy.
+
+## Tour Packages
+
+### Short Stay (3–5 Days)
+- LNC-01: Lombok Signature (3D/2N) — Sasak culture + Secret Gilis snorkeling. From Rp 3,746,600/pax. Min 2 pax.
+- LNC-02: The Sasak Living Heritage (4D/3N) — Cultural immersion + Tetebatu highlands. From Rp 3,718,000/pax.
+- LNC-03: Mandalika Legends (4D/3N) — Princess Mandalika legend + hidden southern beaches. From Rp 2,566,850/pax.
+- LNC-04: Gili Meno Serenity (4D/3N) — Honeymoon package: sea turtles + sunset horse riding + romantic dinner. Rp 5,662,800/pax.
+- LNC-07: Lombok Surf Retreat (3D/2N) — Private surf coaching. Price on request.
+
+### Long Stay (7–14 Days)
+- LNC-13: The Grand Lombok Odyssey (10D/9N) — Complete Lombok loop: highlands + Gili + surf + south. Price on request.
+- LNC-14: Slow Travel — Village & Sea (7D/6N) — Village life + fishing + cooking class. Price on request.
+
+### Bali Package
+- BALI-01: Bali Honeymoon Journey (16D/15N) — Ubud + Munduk + Jimbaran. Price on request.
+
+## Hotel Partners by Zone
+
+### Kuta Mandalika (South Lombok)
+- Sikara Lombok — Boutique Hotel — from Rp 950,000/night
+- Jivana Resort — Resort — from Rp 1,600,000/night
+- Kaleana Villas — Bamboo Villa — from Rp 2,200,000/night
+- Origin Lombok — Boutique Hotel — from Rp 850,000/night
+
+### Senggigi & West Lombok
+- Sudamala Resort, Katamaran Resort, Holiday Resort, Jeeva Klui, The Kayana
+
+### Gili Islands
+- MAHAMAYA Gili Meno, Seri Resort, Pearl of Trawangan, Ponte Villas
+
+### Highlands (East & North Lombok)
+- Les Rizieres Tetebatu, Nusantara Sembalun, Rinjani Lodge

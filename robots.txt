@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+Disallow: /.private/
+Disallow: /lnc_tmp/
+Disallow: /process-booking.php
+Disallow: /payment.php
+Disallow: /payment-callback.php
+Disallow: /payment-finish.php
+Disallow: /payment-balance.php
+Disallow: /check-status.php
+Disallow: /create-tables.php
+Disallow: /deploy.php
+Disallow: /thank-you.php
+Disallow: /invoice.php
+Disallow: /*.env$
+Disallow: /db.php
+Disallow: /env.php
+
+Sitemap: https://lomboknatureculture.com/sitemap.xml

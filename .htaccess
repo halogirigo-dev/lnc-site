@@ -1,0 +1,91 @@
+# ─── LNC PHP Site — Hostinger .htaccess ─────────────────────────────────────
+# Security-hardened. Do not remove protections below.
+
+Options -Indexes
+RewriteEngine On
+
+# ── Block sensitive directories ───────────────────────────────────────────────
+RewriteRule ^\.private/.*$  - [F,L]
+
+# ── Block environment & config files from direct web access ──────────────────
+<FilesMatch "^(\.env|\.env\.local|\.env\..+)$">
+  Require all denied
+</FilesMatch>
+<Files "env.php">
+  Require all denied
+</Files>
+<Files "db.php">
+  Require all denied
+</Files>
+<Files "create-tables.php">
+  Require all denied
+</Files>
+
+# ── Block deploy webhook from browser (POST only, no GET browsing) ────────────
+<Files "deploy.php">
+  <RequireAny>
+    Require method POST
+  </RequireAny>
+</Files>
+
+# ── Block backup, temp, and dangerous files ───────────────────────────────────
+<FilesMatch "\.(bak|tmp|log|sql|swp|old|orig|dist|save)$">
+  Require all denied
+</FilesMatch>
+<FilesMatch "^(readme|README)\.(html|txt|md)$">
+  Require all denied
+</FilesMatch>
+<FilesMatch "^create_autologin_.*\.php$">
+  Require all denied
+</FilesMatch>
+
+# ── Pretty URLs ───────────────────────────────────────────────────────────────
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^experiences/?$  experiences.php  [L,QSA]
+RewriteRule ^booking/?$      booking.php      [L,QSA]
+RewriteRule ^hotels/?$       hotels.php       [L,QSA]
+RewriteRule ^team/?$         team.php         [L,QSA]
+RewriteRule ^legal/?$        legal.php        [L,QSA]
+RewriteRule ^invoice/?$      invoice.php      [L,QSA]
+RewriteRule ^thank-you/?$    thank-you.php    [L,QSA]
+
+# ── Security headers ──────────────────────────────────────────────────────────
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options                "nosniff"
+  Header always set X-Frame-Options                       "SAMEORIGIN"
+  Header always set Referrer-Policy                       "strict-origin-when-cross-origin"
+  Header always set X-XSS-Protection                      "1; mode=block"
+  Header always set Permissions-Policy                    "camera=(), microphone=(), geolocation=(), payment=()"
+  Header always set Content-Security-Policy               "upgrade-insecure-requests; default-src 'self' https:; script-src 'self' 'unsafe-inline' https://app.sandbox.midtrans.com https://app.midtrans.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://app.sandbox.midtrans.com https://app.midtrans.com; frame-src https://app.sandbox.midtrans.com https://app.midtrans.com;"
+  Header always set X-Permitted-Cross-Domain-Policies     "none"
+  Header always set Cross-Origin-Opener-Policy            "same-origin-allow-popups"
+  # HSTS: 1 year, include subdomains (enable once HTTPS is confirmed stable)
+  # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# ── Cache static assets ───────────────────────────────────────────────────────
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpeg       "access plus 1 year"
+  ExpiresByType image/jpg        "access plus 1 year"
+  ExpiresByType image/png        "access plus 1 year"
+  ExpiresByType image/webp       "access plus 1 year"
+  ExpiresByType image/avif       "access plus 1 year"
+  ExpiresByType image/svg+xml    "access plus 1 year"
+  ExpiresByType image/gif        "access plus 1 year"
+  ExpiresByType text/css         "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType font/ttf         "access plus 1 year"
+  ExpiresByType font/woff        "access plus 1 year"
+  ExpiresByType font/woff2       "access plus 1 year"
+</IfModule>
+
+# ── Gzip compression ──────────────────────────────────────────────────────────
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json text/xml
+</IfModule>
+
+# ── Error pages ───────────────────────────────────────────────────────────────
+ErrorDocument 404 /404.php
+ErrorDocument 403 /index.php
