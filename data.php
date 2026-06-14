@@ -288,10 +288,50 @@ $hotels = [
 
 // ── TEAM ─────────────────────────────────────────────────────
 $team = [
-  ['name'=>'Arief Hidayat','role'=>'Founder & Lead Guide','spec'=>'Mount Rinjani · Cultural Expeditions','years'=>12,'origin'=>'Senaru, North Lombok','lang'=>'Indonesian, English, Basic French','cert'=>'Certified Wilderness First Responder · National Guide License','bio'=>'Arief was born in the shadow of Rinjani and has summited the volcano over 400 times. He founded PT Lombok Nature Culture with one belief: the best travel happens when a guest is treated as a friend, not a customer.'],
-  ['name'=>'Dewi Sasak','role'=>'Cultural Experience Director','spec'=>'Sasak Heritage · Village Ceremonies','years'=>8,'origin'=>'Sade Village, Central Lombok','lang'=>'Indonesian, English, Sasak','cert'=>'Certified Cultural Tourism Guide','bio'=>'Dewi grew up in Sade — one of Lombok\'s most traditional villages. Her deep family connections give guests access to ceremonies and workshops no commercial tour can replicate.'],
-  ['name'=>'Bayu Pratama','role'=>'Senior Trek Guide','spec'=>'Alpine Routes · Rinjani · Wilderness','years'=>10,'origin'=>'Sembalun, East Lombok','lang'=>'Indonesian, English','cert'=>'Mountain Rescue Certificate · Advanced First Aid · SAR Team Member','bio'=>'Bayu is part of the official Rinjani Search and Rescue team. His encyclopaedic knowledge of the terrain makes even the most demanding summit feel achievable.'],
-  ['name'=>'Sari Wulandari','role'=>'Honeymoon & Luxury Specialist','spec'=>'Private Experiences · Luxury Planning','years'=>6,'origin'=>'Mataram, West Lombok','lang'=>'Indonesian, English, Basic Japanese','cert'=>'Hospitality Management · Luxury Travel Specialist (ILTM)','bio'=>'Sari coordinates every honeymoon and premium experience with the precision of a fine hotel concierge — from villa selection to romantic surprise setups.'],
+  [
+    'name'    => 'Irga Saputra',
+    'role'    => 'Founder & Managing Director',
+    'spec'    => 'Vision & Strategy · Authentic Lombok Journeys',
+    'initial' => 'IS',
+    'origin'  => 'Lombok, Indonesia',
+    'lang'    => 'Indonesian, English',
+    'cert'    => 'Destination Management · Tourism Entrepreneurship',
+    'bio'     => 'Leading the vision and growth of Lombok Nature Culture while ensuring every journey reflects the island\'s authentic culture, hospitality, and excellence.',
+    'years'   => '',
+  ],
+  [
+    'name'    => 'Wicky',
+    'role'    => 'Brand Strategist & Digital Experience Lead',
+    'spec'    => 'Brand Development · Digital Strategy · Tech Innovation',
+    'initial' => 'W',
+    'origin'  => 'Lombok, Indonesia',
+    'lang'    => 'Indonesian, English',
+    'cert'    => 'Digital Marketing · UX & Booking Experience Strategy',
+    'bio'     => 'Responsible for brand development, digital strategy, website ecosystem, booking experience, and technology innovation to deliver a seamless customer journey.',
+    'years'   => '',
+  ],
+  [
+    'name'    => 'Phyma',
+    'role'    => 'Operations & Guest Experience Manager',
+    'spec'    => 'Guest Coordination · Local Partnerships · Daily Operations',
+    'initial' => 'P',
+    'origin'  => 'Lombok, Indonesia',
+    'lang'    => 'Indonesian, English',
+    'cert'    => 'Hospitality Operations · Guest Relations',
+    'bio'     => 'Managing daily operations, guest coordination, local partnerships, and ensuring every guest enjoys a smooth and memorable travel experience.',
+    'years'   => '',
+  ],
+  [
+    'name'    => 'Dodik',
+    'role'    => 'Partnership & Business Development Manager',
+    'spec'    => 'Strategic Partnerships · Corporate & Institutional Clients',
+    'initial' => 'D',
+    'origin'  => 'Lombok, Indonesia',
+    'lang'    => 'Indonesian, English',
+    'cert'    => 'Business Development · Tourism Stakeholder Relations',
+    'bio'     => 'Building strategic partnerships with hotels, tourism stakeholders, government institutions, and corporate clients to expand opportunities and enhance guest experiences.',
+    'years'   => '',
+  ],
 ];
 
 // ── TESTIMONIALS ─────────────────────────────────────────────

@@ -161,17 +161,25 @@ document.addEventListener('DOMContentLoaded', function () {
           return;
         }
         memberExpanded.dataset.open = idx;
+        const initials = data.initial || data.name.charAt(0).toUpperCase();
+        const accentColors = ['#2cb896','#38a8d8','#c4964a','#2cb896'];
+        const accentColor  = accentColors[idx % accentColors.length];
+        const initFontSize = initials.length > 1 ? '20px' : '28px';
         memberExpanded.innerHTML = `
           <div>
-            <div class="ph" style="height:220px;">
-              <span class="ph__label">${data.name.toUpperCase()}<br>Portrait photo</span>
+            <div style="height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#111a0f 0%,#1e2a20 100%);position:relative;overflow:hidden;">
+              <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 80%,rgba(44,184,150,.1) 0%,transparent 60%);"></div>
+              <div style="width:88px;height:88px;border-radius:50%;border:2px solid ${accentColor};display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);position:relative;margin-bottom:12px;">
+                <span style="font-family:'MuseoModerno',sans-serif;font-weight:900;font-size:${initFontSize};color:${accentColor};letter-spacing:-.02em;">${initials}</span>
+              </div>
+              <span style="font-family:'MuseoModerno',sans-serif;font-weight:600;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3);">LOMBOK, INDONESIA</span>
             </div>
             <div style="margin-top:16px;">
               <span style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);display:block;margin-bottom:6px;">Languages</span>
               <p style="font-family:'MuseoModerno',sans-serif;font-size:13px;color:rgba(255,255,255,.65);">${data.lang}</p>
             </div>
             <div style="margin-top:14px;">
-              <span style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);display:block;margin-bottom:6px;">Certifications</span>
+              <span style="font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);display:block;margin-bottom:6px;">Expertise</span>
               <p style="font-family:'Museo',sans-serif;font-size:12px;color:rgba(255,255,255,.5);line-height:1.7;">${data.cert}</p>
             </div>
           </div>
@@ -180,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <h3 style="font-family:'MuseoModerno',sans-serif;font-weight:900;font-size:32px;color:#fff;margin-bottom:8px;">${data.name}</h3>
             <p style="font-family:'MuseoModerno',sans-serif;font-weight:500;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:20px;">${data.spec}</p>
             <p style="font-family:'Museo',sans-serif;font-size:15px;color:rgba(255,255,255,.7);line-height:1.85;margin-bottom:24px;">${data.bio}</p>
-            <a href="booking.php" style="display:inline-block;padding:12px 28px;background:#2cb896;color:#fff;font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;">Book a Journey with ${data.name.split(' ')[0]}</a>
+            <a href="booking.php" style="display:inline-block;padding:12px 28px;background:#2cb896;color:#fff;font-family:'MuseoModerno',sans-serif;font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;">Book a Journey</a>
           </div>
           <button onclick="this.closest('.member-expanded').style.display='none';this.closest('.member-expanded').dataset.open='';"
             style="grid-column:1/-1;background:none;border:none;color:rgba(255,255,255,.35);font-family:'MuseoModerno',sans-serif;font-weight:600;font-size:10px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;text-align:left;padding:16px 0 0;border-top:1px solid rgba(255,255,255,.07);">

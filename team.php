@@ -2,7 +2,7 @@
 require_once 'config.php';
 require_once 'data.php';
 $page_title = 'Our Team';
-$page_desc  = 'Meet the guides and team behind PT Lombok Nature Culture — born in Lombok, passionate about their island.';
+$page_desc  = 'Meet the team behind PT Lombok Nature Culture — born in Lombok, combining local expertise, authentic hospitality, and professional service.';
 include 'includes/head.php';
 
 // Structured data: Person schema for each team member
@@ -55,7 +55,7 @@ $values = [
       <p class="section-body" style="color:rgba(255,255,255,.5);">Every person on our team was born or has lived in Lombok for most of their life. We hire for passion, local knowledge, and character — not certificates alone.</p>
     </div>
     <div>
-      <?php foreach ([['8','Team Members'],['12+','Years of Experience (Founder)'],['5','Languages Spoken'],['400+','Rinjani Summits Completed']] as [$n,$l]): ?>
+      <?php foreach ([['4','Core Team Members'],['12+','Years Founder Experience'],['2+','Languages Spoken'],['100%','Private Journeys Only']] as [$n,$l]): ?>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid rgba(255,255,255,.07);">
         <p style="font-family:'MuseoModerno',sans-serif;font-weight:900;font-size:32px;color:#2cb896;"><?= $n ?></p>
         <p style="font-family:'MuseoModerno',sans-serif;font-weight:500;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);text-align:right;max-width:140px;"><?= $l ?></p>
@@ -70,18 +70,38 @@ $values = [
   <div class="container">
     <span class="eyebrow" style="margin-bottom:40px;display:block;">Meet the Team</span>
     <div class="team-grid" id="team-grid">
-      <?php foreach ($team as $i => $m): ?>
-      <div class="member-card" data-member="<?= $i ?>">
-        <div class="ph" style="height:280px;">
-          <span class="ph__label"><?= strtoupper(htmlspecialchars($m['name'])) ?><br>Portrait photo</span>
+      <?php
+      $colours = ['#2cb896', '#38a8d8', '#c4964a', '#2cb896'];
+      foreach ($team as $i => $m):
+        $slug    = strtolower(preg_replace('/[^a-z0-9]+/i', '-', trim($m['name'])));
+        $imgPath = $_SERVER['DOCUMENT_ROOT'] . '/uploads/team/' . $slug . '.jpg';
+        $imgUrl  = UPLOADS_URL . '/team/' . $slug . '.jpg';
+        $hasImg  = file_exists($imgPath);
+        $accent  = $colours[$i % count($colours)];
+        $initial = $m['initial'] ?? mb_strtoupper(mb_substr($m['name'], 0, 1));
+        $initFz  = mb_strlen($initial) > 1 ? '18px' : '26px';
+      ?>
+      <article class="member-card" data-member="<?= $i ?>" tabindex="0" aria-label="<?= htmlspecialchars($m['name']) ?>, <?= htmlspecialchars($m['role']) ?>">
+        <?php if ($hasImg): ?>
+        <div class="member-card__photo">
+          <img src="<?= htmlspecialchars($imgUrl) ?>" alt="<?= htmlspecialchars($m['name']) ?>, <?= htmlspecialchars($m['role']) ?> at Lombok Nature Culture" loading="lazy">
         </div>
+        <?php else: ?>
+        <div class="member-card__avatar" aria-hidden="true" style="height:280px;background:linear-gradient(160deg,#1a2118 0%,#243028 100%);">
+          <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 80%,rgba(44,184,150,.08) 0%,transparent 60%);"></div>
+          <div style="width:88px;height:88px;border-radius:50%;border:2px solid <?= $accent ?>;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);position:relative;">
+            <span style="font-family:'MuseoModerno',sans-serif;font-weight:900;font-size:<?= $initFz ?>;color:<?= $accent ?>;letter-spacing:-.02em;"><?= htmlspecialchars($initial) ?></span>
+          </div>
+          <span style="font-family:'MuseoModerno',sans-serif;font-weight:600;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:12px;">LOMBOK, INDONESIA</span>
+        </div>
+        <?php endif; ?>
         <div class="member-card__body">
           <p class="member-card__role"><?= htmlspecialchars($m['role']) ?></p>
           <p class="member-card__name"><?= htmlspecialchars($m['name']) ?></p>
           <p class="member-card__origin"><?= htmlspecialchars($m['origin']) ?></p>
-          <p class="member-card__yrs"><?= $m['years'] ?> years experience</p>
+          <p class="member-card__bio"><?= htmlspecialchars($m['bio']) ?></p>
         </div>
-      </div>
+      </article>
       <?php endforeach; ?>
     </div>
     <!-- Expanded panel (filled by JS) -->

@@ -335,13 +335,16 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .partners__logo-fallback { display: none; font-family: var(--font-head); font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(0,0,0,.25); }
 
 /* ── TEAM ── */
-.team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
-.member-card { background: var(--bg); overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; }
-.member-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(26,33,24,.1); }
-.member-card__body { padding: 20px; }
+.team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; align-items: stretch; }
+.member-card { background: var(--bg); overflow: hidden; transition: transform 0.25s ease, box-shadow 0.25s ease; cursor: pointer; display: flex; flex-direction: column; }
+.member-card:hover, .member-card:focus-visible { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(26,33,24,.13); outline: none; }
+.member-card:focus-visible { box-shadow: 0 0 0 3px var(--teal), 0 16px 48px rgba(26,33,24,.13); }
+.member-card__avatar { height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.member-card__body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
 .member-card__role { font-family: var(--font-head); font-weight: 700; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal); margin-bottom: 4px; }
 .member-card__name { font-family: var(--font-head); font-weight: 800; font-size: 17px; color: var(--dark); }
 .member-card__origin { font-family: var(--font-body); font-size: 12px; color: var(--muted); margin-top: 2px; }
+.member-card__bio { font-family: var(--font-body); font-size: 12.5px; color: var(--muted); line-height: 1.75; margin-top: 10px; }
 .member-card__yrs { font-family: var(--font-head); font-weight: 600; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(0,0,0,.2); margin-top: 8px; }
 
 /* ── TESTIMONIALS ── */
@@ -1123,6 +1126,7 @@ textarea:focus-visible {
 /* ── MEMBER CARD BODY SPACING ── */
 .member-card__body { padding: 22px 20px; }
 .member-card__name { font-size: 18px; margin-bottom: 3px; }
+.member-card__bio  { font-size: 12.5px; }
 .member-card__yrs  { margin-top: 10px; }
 
 /* ── SECTION TITLE REFINEMENT ── */
@@ -1238,7 +1242,7 @@ textarea.form-input { min-height: 120px; line-height: 1.7; }
   .stat__num { font-size: 34px; }
   .pillar__icon { width: 44px; height: 44px; font-size: 18px; margin-bottom: 20px; }
   .hotel-card__img { height: 200px !important; }
-  .member-card__photo { height: 220px; }
+  .member-card__photo, .member-card__avatar { height: 220px; }
 }
 @media (max-width: 480px) {
   .stat__num { font-size: 30px; }
