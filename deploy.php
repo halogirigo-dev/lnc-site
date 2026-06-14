@@ -1,6 +1,7 @@
 <?php
-// Webhook deploy endpoint — called by GitHub Actions on push to main
-// Verifies HMAC signature, then runs git pull
+set_time_limit(0);
+ignore_user_abort(true);
+error_reporting(0);
 
 define('WEBHOOK_SECRET', '05c6dd13084db225b514e3c71fa555a86567c38d57ffa352e73a323b7e0b89de');
 
@@ -19,8 +20,12 @@ if (($data['ref'] ?? '') !== 'refs/heads/main') {
     exit('Ignored: not main branch');
 }
 
-$repo_path = __DIR__;
-$output = shell_exec("cd $repo_path && git fetch origin main && git reset --hard origin/main 2>&1");
+$repo_path = escapeshellarg(realpath(__DIR__));
+$git       = trim(shell_exec('which git') ?? '/usr/bin/git');
+
+$out  = shell_exec("cd {$repo_path} && {$git} fetch origin main 2>&1") ?? '';
+$out .= shell_exec("cd {$repo_path} && {$git} reset --hard origin/main 2>&1") ?? '';
 
 http_response_code(200);
-echo "Deployed\n$output";
+header('Content-Type: text/plain');
+echo "OK\n" . $out;
