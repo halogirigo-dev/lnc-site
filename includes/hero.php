@@ -1,9 +1,8 @@
 <?php // includes/hero.php — Homepage hero section ?>
 <section class="hero">
-  <picture class="hero__bg">
-    <source srcset="/uploads/hero-background.webp" type="image/webp">
-    <img src="/uploads/hero-background.jpg" alt="" aria-hidden="true" fetchpriority="high" decoding="sync" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
-  </picture>
+  <video class="hero__bg" autoplay muted loop playsinline preload="auto" aria-hidden="true" poster="/uploads/hero-background.jpg">
+    <source src="/uploads/HERO%20BG%20LNC.mp4" type="video/mp4">
+  </video>
   <div class="hero__overlay"></div>
   <div class="hero__content">
     <p class="hero__eyebrow">LOMBOK · INDONESIA · EST. 2016</p>
