@@ -2273,3 +2273,30 @@ html { scroll-behavior: smooth; }
 @media (max-width: 768px) {
   .trust-badge { display: none; }
 }
+
+/* ── HERO VIDEO: error fallback class ── */
+.hero--no-video {
+  background-image: url('/uploads/hero-background.webp');
+  background-size: cover;
+  background-position: center;
+}
+
+/* ── HERO VIDEO: respect prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .hero__bg { display: none; }
+  .hero {
+    background-image: url('/uploads/hero-background.webp');
+    background-size: cover;
+    background-position: center;
+  }
+  .hero__scroll-line { animation: none !important; }
+  .hero__eyebrow,
+  .hero__title,
+  .hero__sub,
+  .hero__ctas,
+  .hero__scroll {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

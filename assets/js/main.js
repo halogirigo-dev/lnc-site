@@ -441,6 +441,18 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  /* ── HERO VIDEO: reduced-motion + error fallback ── */
+  const heroVideo = document.getElementById('hero-video');
+  if (heroVideo) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      heroVideo.pause();
+    }
+    heroVideo.addEventListener('error', () => {
+      heroVideo.remove();
+      if (heroEl) heroEl.classList.add('hero--no-video');
+    });
+  }
+
   /* ── SCROLL REVEAL (IntersectionObserver) ── */
   if ('IntersectionObserver' in window) {
 

@@ -1,6 +1,6 @@
 <?php // includes/hero.php — Homepage hero section ?>
 <section class="hero">
-  <video class="hero__bg" autoplay muted loop playsinline preload="auto" aria-hidden="true" poster="/uploads/hero-background.jpg">
+  <video id="hero-video" class="hero__bg" autoplay muted loop playsinline preload="metadata" aria-hidden="true" poster="/uploads/hero-background.jpg">
     <source src="/uploads/HERO%20BG%20LNC.mp4" type="video/mp4">
   </video>
   <div class="hero__overlay"></div>
